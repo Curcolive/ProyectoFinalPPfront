@@ -1,0 +1,199 @@
+/* --- Estilos para la Lista de Cuotas (Como Tarjetas) --- */
+.list-group-item {
+  cursor: pointer; /* Mano al pasar */
+  border: 1px solid #dee2e6; /* Borde gris suave */
+  border-radius: 0.5rem !important; /* Bordes redondeados */
+  margin-bottom: 1rem; /* Espacio entre "tarjetas" */
+  padding: 1rem 1.25rem; /* Padding interno */
+  transition: all 0.2s ease-in-out; /* Transición suave */
+  display: flex;
+  align-items: center; /* Centra verticalmente */
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Sombra sutil */
+  /* Quitamos la línea superior por defecto para que parezcan tarjetas separadas */
+  border-top-width: 1px !important;
+}
+/* Asegura que el primer item no tenga doble borde superior */
+.list-group-item:first-child {
+    border-top-left-radius: 0.5rem !important;
+    border-top-right-radius: 0.5rem !important;
+}
+/* Asegura que el último item no tenga doble borde inferior */
+.list-group-item:last-child {
+    border-bottom-left-radius: 0.5rem !important;
+    border-bottom-right-radius: 0.5rem !important;
+}
+
+/* Estilo al pasar el mouse (hover) */
+.list-group-item:not(.active-cuota):hover {
+  background-color: #f8f9fa; /* Gris claro */
+  border-color: #ced4da; /* Borde oscuro */
+  transform: translateY(-2px); /* Efecto elevación */
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); /* Sombra pronunciada */
+}
+
+/* Estilo para la cuota seleccionada (activo) - BORDE ROJO */
+.active-cuota,
+.active-cuota:hover {
+  background-color: #fff; /* Fondo blanco */
+  border: 1px solid #dc3545 !important; /* Borde rojo */
+  box-shadow: 0 0 0 0.1rem rgba(220, 53, 69, 0.25); /* Sombra roja sutil */
+  color: #212529; /* Texto oscuro */
+  transform: none; /* Quita efecto hover de elevación */
+}
+/* Asegura que el texto dentro de la cuota activa no cambie */
+.active-cuota small,
+.active-cuota span,
+.active-cuota .fw-bold {
+  color: inherit !important;
+}
+
+/* Checkbox más grande */
+.list-group-item .form-check-input {
+  width: 1.25em;
+  height: 1.25em;
+  margin-top: 0.1em;
+}
+/* Estilo del checkbox cuando está seleccionado */
+.active-cuota .form-check-input {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+
+/* --- Estilos para los Badges de Estado --- */
+.badge {
+  padding: 0.5em 0.9em;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 80px; /* Ancho mínimo */
+  text-align: center;
+}
+.badge.bg-danger { /* Vencida */
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+.badge.bg-warning { /* Pendiente */
+  background-color: #ffc107 !important;
+  color: #212529 !important; /* Texto oscuro */
+}
+
+
+/* --- Estilos para la Card de Resumen de Pago --- */
+.card-resumen {
+  background-color: #dc3545 !important; /* Rojo base - !important para asegurar */
+  color: white !important; /* Texto blanco - !important para asegurar */
+  border: none;
+  border-radius: 0.5rem;
+  padding: 1.25rem 1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-resumen .card-body {
+    padding: 0;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    /* Quitamos justify-content: center general */
+}
+
+.card-resumen .card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  text-align: left; /* Título a la izquierda */
+  color: white !important; /* Asegura color */
+}
+
+.card-resumen hr {
+  border-color: rgba(255, 255, 255, 0.2) !important; /* Línea sutil */
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+/* Contenedor dinámico */
+.card-resumen .content-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrado por defecto (placeholder) */
+    text-align: center;
+}
+
+/* Estilos placeholder (Sin selección) */
+.card-resumen .icon-placeholder {
+    margin-bottom: 0.75rem;
+}
+.card-resumen .icon-placeholder .bi-cash-coin {
+    font-size: 2.5rem;
+    color: rgba(255, 255, 255, 0.4) !important; /* Asegura color */
+}
+.card-resumen .placeholder-text {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7) !important; /* Asegura color */
+    margin-bottom: 0.25rem;
+}
+.card-resumen .placeholder-subtext {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6) !important; /* Asegura color */
+}
+
+/* Estilos con selección */
+.card-resumen .selected-content {
+    justify-content: flex-start; /* Alinea arriba */
+}
+.card-resumen .total-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7) !important; /* Asegura color */
+    margin-bottom: 0.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.card-resumen .total-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1;
+    color: white !important; /* Asegura color */
+}
+.card-resumen .selection-count {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8) !important; /* Asegura color */
+}
+.card-resumen .selection-count .bi {
+    font-size: 0.9rem;
+    vertical-align: text-top;
+    color: white !important; /* Asegura color icono */
+}
+
+/* --- Estilos para las Pestañas de Sub-Navegación --- */
+.nav-tabs .nav-link {
+    font-weight: 500;
+    color: #6c757d; /* Gris suave */
+    padding: 0.75rem 1.25rem; /* Padding como Figma */
+}
+.nav-tabs .nav-link.active {
+    font-weight: 700;
+    color: #dc3545; /* Rojo */
+    border-color: #dee2e6 #dee2e6 #fff;
+    background-color: #fff; /* Fondo blanco explícito */
+}
+.nav-tabs {
+    border-bottom: 1px solid #dee2e6; /* Línea inferior estándar */
+}
+
+
+/* --- Estilos para el Botón Generar Cupón --- */
+.btn-success {
+    background-color: #198754; /* Verde estándar */
+    border-color: #198754;
+    font-weight: 600;
+}
+.btn-success:disabled {
+    background-color: #a3d9a5; /* Verde más claro */
+    border-color: #a3d9a5;
+    /* Asegura que el color del texto sea visible cuando está deshabilitado */
+    color: #6c757d;
+}

@@ -1,0 +1,70 @@
+.login-container {
+    min-height: calc(100vh - 110px);
+    /* Ajusta según altura de tu header+footer si es necesario */
+    background-color: #f0f2f5;
+    /* Un fondo gris claro */
+}
+
+.login-card {
+    border: none;
+    /* Sin borde */
+    border-radius: 0.75rem;
+    /* Bordes redondeados */
+}
+
+.login-title {
+    font-weight: 700;
+    color: #333;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.input-group-text {
+    background-color: #e9ecef;
+    /* Fondo gris para iconos */
+    border-right: none;
+    /* Quita borde derecho del icono */
+}
+
+.form-control {
+    border-left: none;
+    /* Quita borde izquierdo del input */
+}
+
+.form-control:focus {
+    box-shadow: none;
+    /* Quita sombra al enfocar */
+    border-color: #ced4da;
+    /* Mantiene borde gris */
+}
+
+/* Estilo específico para el botón de mostrar/ocultar contraseña */
+.input-group .btn-outline-secondary {
+    border-left: none;
+    /* Quita borde izquierdo */
+}
+
+.input-group .btn-outline-secondary:hover,
+.input-group .btn-outline-secondary:focus {
+    background-color: transparent;
+    /* Sin fondo al pasar/enfocar */
+    box-shadow: none;
+}
+
+
+.forgot-password-link,
+.register-link {
+    font-size: 0.9em;
+    text-decoration: none;
+}
+
+.forgot-password-link:hover,
+.register-link:hover {
+    text-decoration: underline;
+}
+
+.btn-primary {
+    font-weight: 600;
+}
