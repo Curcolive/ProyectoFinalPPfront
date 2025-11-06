@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Spinner } from 'react-bootstrap'; // Importa Spinner
+import { Spinner } from 'react-bootstrap';
 import MainLayout from './layouts/MainLayout';
 import LoginPage from './pages/LoginPage';
 import MisPagosPage from './pages/MisPagosPage';
-import AdminGestionPage from './pages/AdminGestionPage'; // Importa la página de admin
+import AdminGestionPage from './pages/AdminGestionPage';
 import ConfiguracionPage from './pages/ConfiguracionPage';
 import './App.css';
-// Importa la librería para decodificar JWT (instálala: npm install jwt-decode)
-import { jwtDecode } from 'jwt-decode'; // Cambiado de jwt-decode
+import { jwtDecode } from 'jwt-decode';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null); // Estado para guardar el rol del usuario
+  const [userRole, setUserRole] = useState(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
   useEffect(() => {
@@ -23,24 +22,19 @@ function App() {
         try {
           const tokenData = JSON.parse(tokenDataString);
           if (tokenData.access) {
-            // Decodifica el token de acceso para obtener la información del usuario
             const decodedToken = jwtDecode(tokenData.access);
-            // Simple JWT no incluye roles por defecto. Usaremos 'is_staff' si existe
-            // O podemos añadir claims personalizados al token en Django más adelante
-            const isStaff = decodedToken.is_staff || false; // Busca el flag 'is_staff'
+            const isStaff = decodedToken.is_staff || false;
 
-            setUserRole(isStaff ? 'admin' : 'student'); // Asigna el rol
+            setUserRole(isStaff ? 'admin' : 'student');
             setIsAuthenticated(true);
-            // TODO: Implementar lógica de refresco de token si el 'access' token está cerca de expirar
           } else {
-            // Si no hay token de acceso, limpia
             localStorage.removeItem('authToken');
             setIsAuthenticated(false);
             setUserRole(null);
           }
         } catch (e) {
           console.error("Error decoding token:", e);
-          localStorage.removeItem('authToken'); // Limpia token inválido
+          localStorage.removeItem('authToken');
           setIsAuthenticated(false);
           setUserRole(null);
         }
@@ -48,14 +42,13 @@ function App() {
         setIsAuthenticated(false);
         setUserRole(null);
       }
-      setIsLoadingAuth(false); // Terminó la verificación inicial
+      setIsLoadingAuth(false);
     };
     checkAuth();
-  }, []); // Se ejecuta solo una vez al inicio
+  }, []);
 
   // Función llamada por LoginPage después de un login exitoso
   const handleLoginSuccess = () => {
-    // Re-ejecuta checkAuth para leer el nuevo token y rol
     const tokenDataString = localStorage.getItem('authToken');
     if (tokenDataString) {
       try {
@@ -66,26 +59,22 @@ function App() {
           setUserRole(isStaff ? 'admin' : 'student');
           setIsAuthenticated(true);
           // Redirige manualmente después del login exitoso
-          window.location.href = isStaff ? '/admin/cobranzas' : '/cuotas'; // Redirige según rol
+          // (Esta parte ya estaba bien, pero ahora el router también redirigirá)
+          window.location.href = isStaff ? '/admin/cobranzas' : '/cuotas';
         }
       } catch (e) {
-        // Si algo falla al leer el token recién guardado (muy raro)
-        handleLogout(); // Fuerza logout
+        handleLogout();
       }
     }
   };
 
-
   // Función para manejar el logout
   const handleLogout = () => {
-    localStorage.removeItem('authToken'); // Borra solo el token
-    // Ya no borramos 'userRole' porque no lo guardamos ahí
+    localStorage.removeItem('authToken');
     setIsAuthenticated(false);
-    setUserRole(null); // Limpia el rol en el estado
-    // Forzamos recarga a /login
+    setUserRole(null);
     window.location.href = '/login';
   };
-
 
   // Muestra spinner mientras se verifica el token al inicio
   if (isLoadingAuth) {
@@ -104,88 +93,99 @@ function App() {
 
   return (
     <Router>
-      {/* Pasa isAuthenticated y handleLogout al layout */}
-      <MainLayout isAuthenticated={isAuthenticated} handleLogout={handleLogout}>
-        <Routes>
-          {/* Ruta Login */}
-          <Route
-            path="/login"
-            element={
-              isAuthenticated ? (
-                // Si ya está logueado, redirige al panel correspondiente
-                <Navigate to={isAdmin ? "/admin/cobranzas" : "/cuotas"} replace />
-              ) : (
-                <LoginPage onLoginSuccess={handleLoginSuccess} />
-              )
-            }
-          />
+      <Routes>
+        {/* --- RUTA DE LOGIN (SIN LAYOUT) --- */}
+        {/* Esta ruta se maneja fuera del MainLayout */}
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? (
+              // Si ya está logueado, redirige al panel correspondiente
+              <Navigate to={isAdmin ? "/admin/cobranzas" : "/cuotas"} replace />
+            ) : (
+              // Si no está logueado, muestra la página de login (sin barra azul)
+              <LoginPage onLoginSuccess={handleLoginSuccess} />
+            )
+          }
+        />
 
-          {/* Ruta Protegida Cuotas (Alumno) */}
-          <Route
-            path="/cuotas"
-            element={
-              isAuthenticated && !isAdmin ? ( // Solo si está logueado Y NO es admin
-                <MisPagosPage />
-              ) : (
-                <Navigate to={isAdmin ? "/admin/cobranzas" : "/login"} replace /> // Si es admin va a cobranzas, si no a login
-              )
-            }
-          />
+        {/* --- RUTAS PROTEGIDAS (CON LAYOUT) --- */}
+        {/* Usamos un "catch-all" (*) para todas las demás rutas */}
+        <Route
+          path="/*"
+          element={
+            isAuthenticated ? (
+              // 1. Si está logueado, muestra el MainLayout (barra azul)...
+              <MainLayout isAuthenticated={isAuthenticated} handleLogout={handleLogout}>
+                {/* 2. ...y dentro del layout, define las rutas protegidas */}
+                <Routes>
+                  
+                  {/* Ruta Protegida Cuotas (Alumno) */}
+                  <Route
+                    path="/cuotas"
+                    element={
+                      !isAdmin ? ( // Solo si NO es admin
+                        <MisPagosPage />
+                      ) : (
+                        <Navigate to="/admin/cobranzas" replace /> // Si es admin va a cobranzas
+                      )
+                    }
+                  />
 
-          {/* Ruta Protegida Admin Cobranzas */}
-          <Route
-            path="/admin/cobranzas"
-            element={
-              isAuthenticated && isAdmin ? ( // Solo si está logueado Y ES admin
-                <AdminGestionPage />
-              ) : (
-                <Navigate to={isAuthenticated ? "/cuotas" : "/login"} replace /> // Si es alumno va a cuotas, si no a login
-              )
-            }
-          />
+                  {/* Ruta Protegida Admin Cobranzas */}
+                  <Route
+                    path="/admin/cobranzas"
+                    element={
+                      isAdmin ? ( // Solo si ES admin
+                        <AdminGestionPage />
+                      ) : (
+                        <Navigate to="/cuotas" replace /> // Si es alumno va a cuotas
+                      )
+                    }
+                  />
 
-          {/* --- NUEVA RUTA PROTEGIDA PARA CONFIGURACIÓN --- */}
-          <Route
-            path="/admin/config"
-            element={
-              isAuthenticated && isAdmin ? (
-                <ConfiguracionPage />
-              ) : (
-                <Navigate to={isAuthenticated ? "/cuotas" : "/login"} replace />
-              )
-            }
-          />
-          {/* --- FIN NUEVA RUTA ADMIN --- */}
+                  {/* Ruta Protegida para Configuración (Admin) */}
+                  <Route
+                    path="/admin/config"
+                    element={
+                      isAdmin ? (
+                        <ConfiguracionPage />
+                      ) : (
+                        <Navigate to="/cuotas" replace />
+                      )
+                    }
+                  />
 
-          {/* Ruta Raíz */}
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                // Raíz redirige al panel correspondiente
-                <Navigate to={isAdmin ? "/admin/cobranzas" : "/cuotas"} replace />
-              ) : (
-                <Navigate to="/login" replace /> // Si no está logueado, a login
-              )
-            }
-          />
+                  {/* Ruta Raíz */}
+                  <Route
+                    path="/"
+                    element={
+                      // Raíz redirige al panel correspondiente
+                      <Navigate to={isAdmin ? "/admin/cobranzas" : "/cuotas"} replace />
+                    }
+                  />
 
-          {/* Placeholder para otras rutas (protegerlas según rol) */}
-          <Route path="/inicio" element={isAuthenticated && !isAdmin ? <div>Inicio Alumno</div> : <Navigate to={isAdmin ? "/admin/cobranzas" : "/login"} replace />} />
-          <Route path="/mis-datos" element={isAuthenticated && !isAdmin ? <div>Mis Datos</div> : <Navigate to={isAdmin ? "/admin/cobranzas" : "/login"} replace />} />
-          <Route path="/academico" element={isAuthenticated && !isAdmin ? <div>Académico</div> : <Navigate to={isAdmin ? "/admin/cobranzas" : "/login"} replace />} />
-          {/* Añadir placeholders protegidos para rutas admin */}
-          <Route path="/admin/dashboard" element={isAuthenticated && isAdmin ? <div>Admin Dashboard</div> : <Navigate to={isAuthenticated ? "/cuotas" : "/login"} replace />} />
-          <Route path="/admin/alumnos" element={isAuthenticated && isAdmin ? <div>Admin Alumnos</div> : <Navigate to={isAuthenticated ? "/cuotas" : "/login"} replace />} />
-          <Route path="/admin/reportes" element={isAuthenticated && isAdmin ? <div>Admin Reportes</div> : <Navigate to={isAuthenticated ? "/cuotas" : "/login"} replace />} />
-          <Route path="/admin/config" element={isAuthenticated && isAdmin ? <div>Admin Config</div> : <Navigate to={isAuthenticated ? "/cuotas" : "/login"} replace />} />
+                  {/* Placeholders (ya están protegidos por el check de 'isAuthenticated' de la ruta padre) */}
+                  <Route path="/inicio" element={!isAdmin ? <div>Inicio Alumno</div> : <Navigate to="/admin/cobranzas" replace />} />
+                  <Route path="/mis-datos" element={!isAdmin ? <div>Mis Datos</div> : <Navigate to="/admin/cobranzas" replace />} />
+                  <Route path="/academico" element={!isAdmin ? <div>Académico</div> : <Navigate to="/admin/cobranzas" replace />} />
+                  
+                  <Route path="/admin/dashboard" element={isAdmin ? <div>Admin Dashboard</div> : <Navigate to="/cuotas" replace />} />
+                  <Route path="/admin/alumnos" element={isAdmin ? <div>Admin Alumnos</div> : <Navigate to="/cuotas" replace />} />
+                  <Route path="/admin/reportes" element={isAdmin ? <div>Admin Reportes</div> : <Navigate to="/cuotas" replace />} />
+                  
+                  {/* Ruta 404 */}
+                  <Route path="*" element={<div className="text-center p-5"><h2>404 - Página no encontrada</h2></div>} />
 
-
-          {/* Ruta 404 */}
-          <Route path="*" element={<div className="text-center p-5"><h2>404 - Página no encontrada</h2></div>} />
-
-        </Routes>
-      </MainLayout>
+                </Routes>
+              </MainLayout>
+            ) : (
+              // 3. Si NO está logueado y no es /login, redirige a /login
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+      </Routes>
     </Router>
   );
 }

@@ -1,70 +1,243 @@
+/* --- RESET GLOBAL PARA LOGIN PAGE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* --- FIN DEL RESET --- */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+/* --- ESTILOS GLOBALES DE LA PÁGINA DE LOGIN --- */
+.login-page-wrapper {
+    /* --- ¡NUEVO! Propiedades para la imagen de fondo --- */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    /* Estilos anteriores */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 100vh; 
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* --- ¡CAMBIO DE NOMBRE! --- */
 .login-container {
-    min-height: calc(100vh - 110px);
-    /* Ajusta según altura de tu header+footer si es necesario */
-    background-color: #f0f2f5;
-    /* Un fondo gris claro */
+    background-color: #fff;
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+    width: 768px;
+    max-width: 100%;
+    min-height: 480px;
+    margin: 20px;
 }
 
-.login-card {
-    border: none;
-    /* Sin borde */
-    border-radius: 0.75rem;
-    /* Bordes redondeados */
+/* --- ESTILOS DE TEXTO (con .login-container) --- */
+.login-container p {
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    margin: 20px 0;
 }
-
-.login-title {
-    font-weight: 700;
-    color: #333;
+.login-container span {
+    font-size: 12px;
 }
-
-.form-label {
-    font-weight: 500;
-}
-
-.input-group-text {
-    background-color: #e9ecef;
-    /* Fondo gris para iconos */
-    border-right: none;
-    /* Quita borde derecho del icono */
-}
-
-.form-control {
-    border-left: none;
-    /* Quita borde izquierdo del input */
-}
-
-.form-control:focus {
-    box-shadow: none;
-    /* Quita sombra al enfocar */
-    border-color: #ced4da;
-    /* Mantiene borde gris */
-}
-
-/* Estilo específico para el botón de mostrar/ocultar contraseña */
-.input-group .btn-outline-secondary {
-    border-left: none;
-    /* Quita borde izquierdo */
-}
-
-.input-group .btn-outline-secondary:hover,
-.input-group .btn-outline-secondary:focus {
-    background-color: transparent;
-    /* Sin fondo al pasar/enfocar */
-    box-shadow: none;
-}
-
-
-.forgot-password-link,
-.register-link {
-    font-size: 0.9em;
-    text-decoration: none;
-}
-
-.forgot-password-link:hover,
-.register-link:hover {
-    text-decoration: underline;
-}
-
-.btn-primary {
+.login-container span.text-danger {
+    font-size: 13px;
     font-weight: 600;
+}
+.login-container a {
+    color: #333;
+    font-size: 13px;
+    text-decoration: none;
+    margin: 15px 0 10px;
+}
+
+/* --- BOTONES (con .login-container) --- */
+.login-container button {
+    background-color: #8B2530; 
+    color: #fff;
+    font-size: 12px;
+    padding: 10px 45px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.login-container button:hover {
+    background-color: #a84b55;
+}
+.login-container button:disabled {
+    background-color: #cccccc; 
+    cursor: not-allowed;
+}
+.login-container button.hidden {
+    background-color: transparent;
+    border-color: #fff;
+}
+
+/* --- FORMULARIO Y INPUTS (con .login-container) --- */
+.login-container form {
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    height: 100%;
+}
+
+/* --- GRUPO DE INPUT (Este no cambia) --- */
+.input-group {
+    position: relative;
+    width: 100%;
+    margin: 8px 0;
+}
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 14px;
+    z-index: 2;
+}
+.input-group i.toggle-password {
+    left: auto;
+    right: 15px;
+    cursor: pointer;
+    color: #555;
+}
+
+/* --- INPUTS (con .login-container) --- */
+.login-container input {
+    background-color: #eee;
+    border: 1px solid transparent;
+    margin: 0;
+    padding: 10px 15px;
+    font-size: 13px;
+    border-radius: 8px;
+    width: 100%;
+    outline: none;
+    padding-left: 45px;
+    transition: all 0.3s ease;
+}
+
+.login-container input:focus {
+    border-color: rgba(139, 37, 48, 0.4);
+    box-shadow: 0 0 0 3px rgba(139, 37, 48, 0.2);
+    background-color: #fff;
+}
+
+/* --- PROPORCIONES (con .login-container) --- */
+.form-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+}
+.sign-in {
+    left: 0;
+    width: 50%;
+    z-index: 2;
+}
+.login-container.active .sign-in {
+    transform: translateX(100%);
+}
+.sign-up {
+    left: 0;
+    width: 50%;
+    opacity: 0;
+    z-index: 1;
+}
+.login-container.active .sign-up {
+    transform: translateX(100%);
+    opacity: 1;
+    z-index: 5;
+    animation: move 0.6s;
+}
+@keyframes move {
+    0%, 49.99% { opacity: 0; z-index: 1; }
+    50%, 100% { opacity: 1; z-index: 5; }
+}
+.social-icons {
+    margin: 20px 0;
+}
+.social-icons a {
+    border: 1px solid #ccc;
+    border-radius: 20%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 3px;
+    width: 40px;
+    height: 40px;
+}
+.toggle-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: all 0.6s ease-in-out;
+    border-radius: 150px 0 0 100px;
+    z-index: 1000;
+}
+.login-container.active .toggle-container {
+    transform: translateX(-100%);
+    border-radius: 0 150px 100px 0;
+}
+
+/* --- PANEL OVERLAY (con .login-container) --- */
+.toggle {
+    background-color: #8B2530; 
+    height: 100%;
+    background: linear-gradient(to right, #a84b55, #8B2530); 
+    color: #fff;
+    position: relative;
+    left: -100%;
+    height: 100%;
+    width: 200%;
+    transform: translateX(0);
+    transition: all 0.6s ease-in-out;
+}
+.login-container.active .toggle {
+    transform: translateX(50%);
+}
+.toggle-panel {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 30px;
+    text-align: center;
+    top: 0;
+    transform: translateX(0);
+    transition: all 0.6s ease-in-out;
+}
+.toggle-left {
+    transform: translateX(-200%);
+}
+.login-container.active .toggle-left {
+    transform: translateX(0);
+}
+.toggle-right {
+    right: 0;
+    transform: translateX(0);
+}
+.login-container.active .toggle-right {
+    transform: translateX(200%);
 }

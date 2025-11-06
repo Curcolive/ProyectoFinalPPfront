@@ -1,18 +1,28 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Spinner, InputGroup } from 'react-bootstrap';
-import './LoginPage.css';
+import './LoginPage.css'; // Importaremos los nuevos estilos
+import { Spinner } from 'react-bootstrap'; 
 import { loginUser } from '../services/authApi';
+import logoISDM from '../assets/logo-pequeño.png'; 
 
-// Recibe 'onLoginSuccess' como prop
+// --- 1. ¡NUEVO! IMPORTA TU IMAGEN DE FONDO ---
+// (Asegúrate de que la ruta '../assets/fondo-instituto.png' sea correcta)
+import fondoInstituto from '../assets/fondo-instituto.png';
+
+
 function LoginPage({ onLoginSuccess }) {
-    // --- Estados ---
+    // --- Estados para la lógica de login (de tu código) ---
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // --- Handler para el envío ---
+    // --- Estado para la animación (del script.js) ---
+    const [isActive, setIsActive] = useState(false);
+
+    // --- ¡NUEVO ESTADO para el ojo de la contraseña! ---
+    const [showPassword, setShowPassword] = useState(false);
+
+    // --- Handler para el envío (de tu código) ---
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
@@ -24,20 +34,10 @@ function LoginPage({ onLoginSuccess }) {
 
         try {
             const tokenData = await loginUser(username, password);
-            console.log("Tokens recibidos:", tokenData);
-            // Guarda el token completo (access y refresh)
             localStorage.setItem('authToken', JSON.stringify(tokenData));
-
-            // --- SIMULACIÓN DE ROL ELIMINADA ---
-            // Ya no guardamos 'userRole' aquí
-
-            // Llama a la función del prop para avisar a App.js
             onLoginSuccess();
-
-            // Limpia el formulario (opcional)
             setUsername('');
             setPassword('');
-
         } catch (err) {
             console.error("Error en handleLogin:", err);
             setError(err.message || "Error al iniciar sesión. Verifica tus credenciales.");
@@ -46,87 +46,118 @@ function LoginPage({ onLoginSuccess }) {
         }
     };
 
-    // --- Renderizado ---
     return (
-        <Container fluid className="login-container d-flex justify-content-center align-items-center">
-            <Row className="w-100">
-                <Col md={{ span: 6, offset: 3 }} lg={{ span: 4, offset: 4 }}>
-                    <Card className="shadow-lg login-card">
-                        <Card.Body className="p-4 p-md-5">
-                            <div className="text-center mb-4">
-                                <img src="/logo192.png" alt="Logo ISDM" width="80" className="mb-3" />
-                                <h2 className="login-title">Iniciar sesión</h2>
-                            </div>
+        // --- 2. ¡NUEVO! APLICA EL FONDO Y UN OVERLAY OSCURO ---
+        <div 
+            className="login-page-wrapper"
+            style={{ 
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${fondoInstituto})` 
+            }}
+        >
+            <div className={`login-container ${isActive ? 'active' : ''}`} id="container">
+                {/* --- FORMULARIO DE REGISTRO (Panel Izquierdo) --- */}
+                <div className="form-container sign-up">
+                    <form>
+                        <h1>Crear Cuenta</h1>
+                        <div className="social-icons">
+                            <a href="#!" onClick={(e) => e.preventDefault()} className="icon"><i className="fa-brands fa-google-plus-g"></i></a>
+                            <a href="#!" onClick={(e) => e.preventDefault()} className="icon"><i className="fa-brands fa-facebook-f"></i></a>
+                            <a href="#!" onClick={(e) => e.preventDefault()} className="icon"><i className="fa-brands fa-github"></i></a>
+                            <a href="#!" onClick={(e) => e.preventDefault()} className="icon"><i className="fa-brands fa-linkedin-in"></i></a>
+                        </div>
+                        <span>o usa tu email para registrarte</span>
+                        
+                        {/* --- Input de Registro (También con grupo) --- */}
+                        <div className="input-group">
+                            <i className="fa-solid fa-user"></i>
+                            <input type="text" placeholder="Nombre" />
+                        </div>
+                        <div className="input-group">
+                            <i className="fa-solid fa-envelope"></i>
+                            <input type="email" placeholder="Email" />
+                        </div>
+                        <div className="input-group">
+                            <i className="fa-solid fa-lock"></i>
+                            <input type="password" placeholder="Contraseña" />
+                        </div>
+                        <button type="button">Registrarse</button>
+                    </form>
+                </div>
 
-                            <Form onSubmit={handleLogin}>
-                                {/* Campo Usuario */}
-                                <Form.Group className="mb-3" controlId="formBasicUsername">
-                                    <Form.Label>Usuario</Form.Label>
-                                    <InputGroup>
-                                        <InputGroup.Text><i className="bi bi-person-fill"></i></InputGroup.Text>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Ingresa tu usuario"
-                                            value={username}
-                                            onChange={(e) => setUsername(e.target.value)}
-                                            isInvalid={!!error}
-                                            required
-                                            autoComplete="username"
-                                        />
-                                    </InputGroup>
-                                </Form.Group>
+                {/* --- FORMULARIO DE LOGIN (Panel Derecho) --- */}
+                <div className="form-container sign-in">
+                    <form onSubmit={handleLogin}>
+                        
+                        <img src={logoISDM} alt="Logo ISDM" width="80" className="mb-3" />
+                        <h1>Iniciar Sesión</h1>
+                        
+                        {/* --- ¡NUEVO: Input de Usuario con Icono --- */}
+                        <div className="input-group">
+                            <i className="fa-solid fa-user"></i>
+                            <input 
+                                type="text" 
+                                placeholder="Usuario (Legajo o DNI)"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                            />
+                        </div>
+                        
+                        {/* --- ¡NUEVO: Input de Contraseña con Icono y Ojo --- */}
+                        <div className="input-group">
+                            <i className="fa-solid fa-lock"></i>
+                            <input 
+                                type={showPassword ? "text" : "password"} // Tipo dinámico
+                                placeholder="Contraseña"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                            {/* ¡NUEVO: Ojo para mostrar/ocultar! */}
+                            <i 
+                                className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"} toggle-password`}
+                                onClick={() => setShowPassword(!showPassword)}
+                            ></i>
+                        </div>
+                        
+                        {error && <span className="text-danger mt-2">{error}</span>}
+                        
+                        <a href="#!">¿Olvidaste tu contraseña?</a>
+                        
+                        <button type="submit" disabled={loading}>
+                            {loading ? (
+                                <>
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2"/>
+                                    Ingresando...
+                                </>
+                            ) : (
+                                'Iniciar Sesión'
+                            )}
+                        </button>
+                    </form>
+                </div>
 
-                                {/* Campo Contraseña */}
-                                <Form.Group className="mb-3" controlId="formBasicPassword">
-                                    <Form.Label>Contraseña</Form.Label>
-                                    <InputGroup>
-                                        <InputGroup.Text><i className="bi bi-lock-fill"></i></InputGroup.Text>
-                                        <Form.Control
-                                            type={showPassword ? 'text' : 'password'}
-                                            placeholder="Ingresa tu contraseña"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            isInvalid={!!error}
-                                            required
-                                            autoComplete="current-password"
-                                        />
-                                        <Button variant="outline-secondary" onClick={() => setShowPassword(!showPassword)} tabIndex={-1}>
-                                            <i className={showPassword ? "bi bi-eye-slash-fill" : "bi bi-eye-fill"}></i>
-                                        </Button>
-                                    </InputGroup>
-                                    {error && <Form.Text className="text-danger d-block mt-1">{error}</Form.Text>}
-                                </Form.Group>
-
-                                {/* Enlace ¿Olvidaste contraseña? */}
-                                <div className="text-end mb-3">
-                                    <a href="#forgot" className="forgot-password-link">¿Olvidaste tu contraseña?</a>
-                                </div>
-
-                                {/* Botón de Ingresar */}
-                                <div className="d-grid">
-                                    <Button variant="primary" type="submit" disabled={loading} size="lg">
-                                        {loading ? (
-                                            <>
-                                                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2"/>
-                                                Ingresando...
-                                            </>
-                                        ) : (
-                                            'Entrar'
-                                        )}
-                                    </Button>
-                                </div>
-                            </Form>
-
-                            {/* Enlace de Registro */}
-                            <div className="text-center mt-4">
-                                <span className="text-muted">¿No tienes cuenta? </span>
-                                <a href="#register" className="register-link">Regístrate</a>
-                            </div>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-        </Container>
+                {/* --- PANELES DE ANIMACIÓN (OVERLAY) --- */}
+                <div className="toggle-container">
+                    <div className="toggle">
+                        <div className="toggle-panel toggle-left">
+                            <h1>¡Bienvenido de nuevo!</h1>
+                            <p>Ingresa tus datos personales para usar todas las funciones del sitio</p>
+                            <button type="button" className="hidden" id="login" onClick={() => setIsActive(false)}>
+                                Iniciar Sesión
+                            </button>
+                        </div>
+                        <div className="toggle-panel toggle-right">
+                            <h1>¡Hola!</h1>
+                            <p>Regístrate con tus datos personales para usar todas las funciones del sitio</p>
+                            <button type="button" className="hidden" id="register" onClick={() => setIsActive(true)}>
+                                Registrarse
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
 
