@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap';
+// Importamos el CSS que crearemos en el paso 2
+import './AnularCuponModal.css'; 
 
-/**
- * Componente Modal para confirmar la anulación de un cupón.
- * Recibe props para funcionar:
- * - show: (boolean) Controla si el modal es visible.
- * - handleClose: (function) Se llama al cerrar/cancelar.
- * - handleConfirm: (function) Se llama al confirmar. Recibe el 'motivo'.
- * - cuponId: (number) El ID del cupón a anular, para mostrarlo.
- * - isAnulando: (boolean) Muestra un spinner en el botón de confirmar.
- * - errorAnulacion: (string) Un mensaje de error si la API falla.
- */
 function AnularCuponModal({ show, handleClose, handleConfirm, cuponId, isAnulando, errorAnulacion }) {
     const [motivo, setMotivo] = useState('');
-    const [validated, setValidated] = useState(false); // Para validación de Bootstrap
+    const [validated, setValidated] = useState(false);
 
-    // Limpia el motivo cuando el modal se cierra o cambia de cupón
     useEffect(() => {
         if (!show) {
             setMotivo('');
@@ -24,64 +15,94 @@ function AnularCuponModal({ show, handleClose, handleConfirm, cuponId, isAnuland
     }, [show]);
 
     const handleSubmit = (event) => {
-        event.preventDefault(); // Evita que el formulario recargue la página
+        event.preventDefault();
         const form = event.currentTarget;
-
-        // Valida que el motivo no esté vacío
         if (form.checkValidity() === false || motivo.trim() === '') {
             event.stopPropagation();
-            setValidated(true); // Muestra el error de validación
+            setValidated(true);
         } else {
-            handleConfirm(motivo); // Llama a la función del padre con el motivo
+            handleConfirm(motivo);
         }
     };
 
     return (
-        <Modal show={show} onHide={handleClose} centered>
-            {/* Usamos Form para habilitar la validación */}
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                <Modal.Header closeButton className="bg-danger text-white">
-                    <Modal.Title><i className="bi bi-exclamation-triangle-fill me-2"></i>Anular Cupón de Pago #{cuponId || '...'}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>¿Estás seguro de que deseas anular este cupón? Esta acción no se puede deshacer.</p>
+        <Modal 
+            show={show} 
+            onHide={handleClose} 
+            centered 
+            // Clase para el estilo del contenedor (Glow rojo y bordes redondos)
+            className="modern-modal modal-danger"
+        >
+            {/* Header invisible, solo para la X de cerrar */}
+            <Modal.Header closeButton className="border-0 pb-0"></Modal.Header>
 
-                    {/* Muestra un error si la API falló en el intento anterior */}
-                    {errorAnulacion && <Alert variant="danger">{errorAnulacion}</Alert>}
+            <Modal.Body className="px-4 pb-4 pt-0">
+                
+                {/* 1. ÍCONO FLOTANTE CENTRADO CON ANIMACIÓN */}
+                <div className="text-center mb-3">
+                    <div className="modal-icon-wrapper danger animate-pulse mx-auto">
+                        <i className="bi bi-trash3-fill"></i>
+                    </div>
+                    <h3 className="fw-bold mt-3">¿Anular Cupón #{cuponId}?</h3>
+                </div>
 
-                    <Form.Group controlId="motivoAnulacion">
-                        <Form.Label>Motivo de la anulación <span className="text-danger">*</span></Form.Label>
+                {/* 2. MENSAJES DE ERROR O ADVERTENCIA */}
+                {errorAnulacion && <Alert variant="danger" className="mb-3">{errorAnulacion}</Alert>}
+                
+                <p className="text-muted text-center mb-4">
+                    Esta acción es <strong>irreversible</strong>. El cupón quedará invalidado permanentemente.
+                </p>
+
+                {/* 3. FORMULARIO CON ESTILO MODERNO */}
+                <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                    <Form.Group controlId="motivoAnulacion" className="mb-4 text-start">
+                        <Form.Label className="fw-bold small text-secondary text-uppercase" style={{fontSize: '0.75rem', letterSpacing: '0.5px'}}>
+                            Motivo de la anulación <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Control
                             as="textarea"
                             rows={3}
-                            placeholder="Describe el motivo de la anulación..."
+                            placeholder="Escribe la razón por la cual anulas este cupón..."
                             value={motivo}
                             onChange={(e) => setMotivo(e.target.value)}
-                            required // El campo es obligatorio
-                            // Muestra inválido si se intentó enviar vacío
-                            isInvalid={validated && motivo.trim() === ''}
+                            required
+                            className="modal-input-modern" // Clase nueva para el input
                         />
                         <Form.Control.Feedback type="invalid">
-                            El motivo es obligatorio.
+                            El motivo es obligatorio para poder anular.
                         </Form.Control.Feedback>
                     </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose} disabled={isAnulando}>
-                        Cancelar
-                    </Button>
-                    <Button variant="danger" type="submit" disabled={isAnulando}>
-                        {isAnulando ? (
-                            <>
-                                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                                Anulando...
-                            </>
-                        ) : (
-                            'Confirmar Anulación'
-                        )}
-                    </Button>
-                </Modal.Footer>
-            </Form>
+
+                    {/* 4. BOTONES GRANDES Y ESTILIZADOS */}
+                    <div className="d-grid gap-2 col-12 mx-auto">
+                        <Button 
+                            variant="danger" 
+                            type="submit" 
+                            disabled={isAnulando} 
+                            className="shadow-sm btn-lg-modern"
+                            size="lg"
+                        >
+                            {isAnulando ? (
+                                <>
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                                    Anulando...
+                                </>
+                            ) : (
+                                'Confirmar Anulación'
+                            )}
+                        </Button>
+
+                        <Button 
+                            variant="link" 
+                            onClick={handleClose} 
+                            disabled={isAnulando}
+                            className="text-decoration-none text-muted mt-1"
+                        >
+                            Cancelar y volver
+                        </Button>
+                    </div>
+                </Form>
+            </Modal.Body>
         </Modal>
     );
 }

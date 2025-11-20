@@ -1,0 +1,195 @@
+/* Contenedor tipo Tarjeta con GLOW ROJO DIFUMINADO */
+.table-card-container {
+    border-radius: 12px !important;
+    background-color: white;
+    /* Borde sutil rojizo */
+    border: 1px solid rgba(139, 37, 48, 0.3) !important;
+    /* Glow difuminado rojizo más pronunciado */
+    box-shadow: 0 0 20px rgba(139, 37, 48, 0.15), 0 0 40px rgba(139, 37, 48, 0.05) !important;
+    overflow-x: auto !important;
+    /* Asegura scroll horizontal */
+    transform: rotateX(180deg);
+    /* Mueve el scroll arriba */
+}
+
+/* Estilos generales de la tabla */
+.modern-table {
+    transform: rotateX(180deg);
+    /* Corrige la orientación del contenido */
+    margin-bottom: 0;
+    table-layout: auto;
+    /* Permite que la tabla crezca según el contenido */
+    min-width: 1400px;
+    color: #6c757d;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #f5c2c7;
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+    white-space: nowrap;
+    /* Mantiene el texto en una línea */
+}
+
+/* --- AQUÍ ESTÁ EL ARREGLO DE LOS ANCHOS --- */
+
+/* 1. ID */
+.col-id {
+    min-width: 100px;
+}
+
+.col-date {
+    min-width: 160px;
+}
+
+/* 2. Monto */
+.col-monto {
+    min-width: 160px;
+}
+
+/* 3. Pasarela */
+.col-pasarela {
+    min-width: 160px;
+}
+
+.col-estado {
+    min-width: 180px;
+}
+
+.col-acciones {
+    min-width: 150px;
+}
+
+/* ------------------------------------------ */
+
+/* CABECERA DE LA TABLA */
+.modern-table thead th {
+    background-color: #fff5f5;
+    color: #6c757d;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #f5c2c7;
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+    white-space: nowrap;
+}
+
+/* CUERPO DE LA TABLA */
+.modern-table tbody td {
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+    color: #495057;
+    border-bottom: 1px solid #f1f3f5;
+    font-size: 0.95rem;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.modern-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Efecto Hover */
+.modern-table tbody tr:hover {
+    background-color: #fffbfb;
+}
+
+.small-icon {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* --- BADGES (Estilo Rectangular) --- */
+.status-pill {
+    padding: 0.5em 0.8em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+    min-width: 90px;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* --- COLORES DE BADGES (FORZADOS) --- */
+.badge.bg-success {
+    background-color: #198754 !important;
+    color: white !important;
+    border: none;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+    color: white !important;
+    border: none;
+}
+
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+    color: white !important;
+    border: none;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+/* --- SELECTORES ADMIN (Corrección de Color) --- */
+.status-select {
+    background-color: #fff !important;
+    border-width: 2px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+/* Forzar color negro en las opciones para que no hereden el color del select */
+.status-select option {
+    color: #212529 !important;
+    background-color: #fff !important;
+}
+
+.select-variant-success {
+    color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+.select-variant-danger {
+    color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+.select-variant-info {
+    color: #0dcaf0 !important;
+    border-color: #0dcaf0 !important;
+}
+
+.select-variant-secondary {
+    color: #6c757d !important;
+    border-color: #adb5bd !important;
+}
+
+/* --- BOTONES DE ACCIÓN --- */
+.action-btn-icon {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.action-btn-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.lock-icon:hover {
+    transform: scale(1.2);
+    opacity: 0.8;
+}

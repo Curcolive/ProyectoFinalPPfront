@@ -1,69 +1,43 @@
-/* Ajustes para la nueva barra de navegación */
-.main-navbar .container-fluid {
+.main-layout-wrapper {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--bg-body);
 }
 
-/* Ajusta el padding del NavDropdown de Bootstrap */
-.main-navbar .nav-link {
-    padding: 0.5rem 0.5rem !important;
+.main-content {
+    flex-grow: 1;
+    width: 100%;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
 }
 
-/* En móvil, centra el PillNav y el Dropdown */
-@media (max-width: 991px) {
-    .main-navbar .container-fluid {
-        flex-direction: column;
-        align-items: center;
+.content-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    width: 100%;
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
 
-    .main-navbar .ms-auto {
-        margin-left: 0 !important;
-        margin-top: 10px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-/* --- ¡NUEVO! Estilos para la "Píldora de Usuario" --- 
-*/
-
-/* 'a' es el botón que se ve */
-.user-dropdown a.dropdown-toggle {
-    /* --- ¡CAMBIO! Fondo BLANCO --- */
-    background-color: #FFFFFF; 
-    /* --- ¡CAMBIO! Texto ROJO --- */
-    color: #8B2530 !important;  
-    
-    /* Estilos de Píldora */
-    border-radius: 9999px !important;
-    border: none !important;
-    padding: 10px 18px !important;
-    margin-right: 1rem; 
-    
-    /* Tipografía (igual al PillNav) */
-    font-weight: 600;
-    font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.2px;
-    
-    transition: background-color 0.3s ease;
-}
-
-/* Quita la flechita de Bootstrap */
-.user-dropdown a.dropdown-toggle::after {
-    display: none !important;
-}
-
-/* Estilo al pasar el mouse (hover) */
-.user-dropdown a.dropdown-toggle:hover,
-.user-dropdown a.dropdown-toggle:focus {
-    background-color: #f0f0f0; /* Blanco más claro */
-    color: #8B2530 !important;
-}
-
-/* Estilo del menú que se despliega */
-.user-dropdown .dropdown-menu {
-    border-radius: 15px;
-    border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-top: 8px !important;
+/* --- Header Styles --- */
+.app-header {
+    background-color: var(--primary-color);
+    padding: 10px 0;
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    z-index: 100;
+    transition: background-color var(--transition-normal);
 }
