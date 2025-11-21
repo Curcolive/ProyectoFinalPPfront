@@ -155,11 +155,12 @@
 /* --- INPUTS --- */
 .login-container input {
     background-color: #f0f2f5;
-    border: 1px solid transparent;
+    border: 2px solid #c0c4c9;
+    /* Darker border as requested */
     margin: 0;
     padding: 12px 15px;
     font-size: 13px;
-    border-radius: 8px;
+    border-radius: 8px !important;
     width: 100%;
     outline: none;
     padding-left: 45px;
@@ -265,7 +266,7 @@
     background-color: var(--primary-color);
     height: 100%;
     /* Gradient semi-transparente para efecto vidrio */
-    background: linear-gradient(to right, rgba(168, 75, 85, 0.92), rgba(139, 37, 48, 0.92));
+    background: var(--primary-color);
     color: #fff;
     position: relative;
     left: -100%;

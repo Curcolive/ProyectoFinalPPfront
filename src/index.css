@@ -15,15 +15,15 @@
   --accent-hover: #e5c150;
 
   /* Backgrounds */
-  --bg-body: #F9F9F9;
+  --bg-body: #f0f2f5;
   --bg-card: #ffffff;
   --bg-glass: rgba(255, 255, 255, 0.85);
 
   /* UI Elements */
   --border-radius: 12px;
   --border-radius-lg: 20px;
-  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
-  --shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.15);
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
 }
@@ -70,8 +70,15 @@ code {
   background: var(--bg-card);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-soft);
-  border: none;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+/* Global Bootstrap Card Override for consistency */
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-soft);
+  border-radius: var(--border-radius);
 }
 
 .card-custom:hover {

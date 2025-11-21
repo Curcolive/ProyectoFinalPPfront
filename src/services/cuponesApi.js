@@ -458,17 +458,17 @@ export const descargarCuponPDF = async (cuponId) => {
 export const handleBlobDownload = (blob, filename) => {
     // 1. Crea una URL temporal en el navegador para el archivo
     const url = window.URL.createObjectURL(blob);
-    
+
     // 2. Crea un enlace <a> fantasma
     const a = document.createElement('a');
     a.style.display = 'none';
     a.href = url;
     a.download = filename; // El nombre que tendrá el archivo
-    
+
     // 3. Añade el enlace al cuerpo y simula un clic
     document.body.appendChild(a);
     a.click();
-    
+
     // 4. Limpia el enlace y la URL temporal
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);

@@ -29,18 +29,18 @@ function MisPagosPage() {
 
     // --- Effects ---
     const fetchCuotas = async () => {
-        try { setIsLoading(true); setError(null); const data = await getCuotasPendientes(); setCuotas(data); } 
-        catch (err) { setError(err.message || 'Error al cargar cuotas.'); } 
+        try { setIsLoading(true); setError(null); const data = await getCuotasPendientes(); setCuotas(data); }
+        catch (err) { setError(err.message || 'Error al cargar cuotas.'); }
         finally { setIsLoading(false); }
     };
     const fetchTodosLosCupones = async () => {
-        try { setIsLoadingCupones(true); setErrorCupones(null); const data = await getHistorialCupones(); setTodosLosCupones(data); } 
-        catch (err) { setErrorCupones(err.message || 'Error historial.'); } 
+        try { setIsLoadingCupones(true); setErrorCupones(null); const data = await getHistorialCupones(); setTodosLosCupones(data); }
+        catch (err) { setErrorCupones(err.message || 'Error historial.'); }
         finally { setIsLoadingCupones(false); }
     };
     const fetchPasarelas = async () => {
-        try { setIsLoadingPasarelas(true); const data = await getPasarelasDisponibles(); setPasarelas(data); } 
-        catch (err) { console.error(err); } 
+        try { setIsLoadingPasarelas(true); const data = await getPasarelasDisponibles(); setPasarelas(data); }
+        catch (err) { console.error(err); }
         finally { setIsLoadingPasarelas(false); }
     };
 
@@ -59,7 +59,7 @@ function MisPagosPage() {
             const result = await generarCupon(cuotasSeleccionadas, key, pasarelaSeleccionada);
             setGeneratedCoupon(result); fetchCuotas(); setCuotasSeleccionadas([]); setPasarelaSeleccionada(''); fetchTodosLosCupones();
         } catch (err) {
-            if (err && err.status === 409 && err.cupon_existente) { setGenerationError(null); setCuponExistente(err.cupon_existente); } 
+            if (err && err.status === 409 && err.cupon_existente) { setGenerationError(null); setCuponExistente(err.cupon_existente); }
             else { setGenerationError(err.message || 'Error al generar.'); }
         } finally { setIsGenerating(false); }
     };
@@ -68,8 +68,8 @@ function MisPagosPage() {
     const handleCloseAnularModal = () => { setShowAnularModal(false); setCuponParaAnular(null); setAnularError(null); setIsAnulando(false); };
     const handleConfirmAnular = async () => {
         setIsAnulando(true); setAnularError(null);
-        try { await anularCuponAlumno(cuponParaAnular); handleCloseAnularModal(); fetchTodosLosCupones(); fetchCuotas(); } 
-        catch (err) { setAnularError(err.message || "Error al anular."); } 
+        try { await anularCuponAlumno(cuponParaAnular); handleCloseAnularModal(); fetchTodosLosCupones(); fetchCuotas(); }
+        catch (err) { setAnularError(err.message || "Error al anular."); }
         finally { setIsAnulando(false); }
     };
 
@@ -79,14 +79,14 @@ function MisPagosPage() {
             if (cupon.pasarela?.nombre.toLowerCase() === 'pago fácil') {
                 const blob = await descargarCuponPDF(cupon.id); handleBlobDownload(blob, `cupon_pago_${cupon.id}.pdf`);
             } else { window.open('/cupon_ejemplo.pdf', '_blank'); }
-        } catch (error) { console.error(error); alert(`Error: ${error.message}`); } 
+        } catch (error) { console.error(error); alert(`Error: ${error.message}`); }
         finally { setDownloadingId(null); }
     };
 
     // --- Cálculos ---
     const totalAPagar = cuotas.filter(c => cuotasSeleccionadas.includes(c.id)).reduce((sum, c) => sum + (typeof c.monto === 'number' ? c.monto : parseFloat(c.monto || 0)), 0);
     const isGenerarDisabled = cuotasSeleccionadas.length === 0 || !pasarelaSeleccionada;
-    
+
     const getEstadoBadge = (estadoNombre) => {
         // Mantenemos el estilo redondeado (pill) que se ve bien con el diseño nuevo
         switch (estadoNombre) {
@@ -111,33 +111,33 @@ function MisPagosPage() {
                 <Tab eventKey="mis-pagos" title={<><i className="bi bi-wallet2 me-2"></i>Mis Pagos</>}>
                     <Row>
                         {/* Columna Izquierda (Lista con estilo viejo de tarjetas) */}
-                        <Col md={8} lg={9}>
+                        <Col md={8} lg={8}>
                             <h4 className="mb-3"><i className="bi bi-list-check me-2"></i>Cuotas Pendientes</h4>
                             <p className="text-muted">Selecciona las cuotas que deseas pagar</p>
-                            
+
                             {isLoading && <div className="text-center my-5"><Spinner animation="border" /></div>}
                             {error && <Alert variant="danger">{error}</Alert>}
                             {!isLoading && !error && cuotas.length === 0 && <Alert variant="info"><i className="bi bi-info-circle-fill me-2"></i>No hay cuotas pendientes.</Alert>}
-                            
+
                             {!isLoading && !error && cuotas.length > 0 && (
                                 <ListGroup>
                                     {cuotas.map((cuota) => (
-                                        <ListGroup.Item 
-                                            key={cuota.id} 
-                                            as="li" 
+                                        <ListGroup.Item
+                                            key={cuota.id}
+                                            as="li"
                                             // Combinamos estilos: d-flex para alinear, pero CSS maneja la tarjeta
-                                            className={`d-flex justify-content-between align-items-center p-3 ${cuotasSeleccionadas.includes(cuota.id) ? 'active-cuota' : ''}`} 
-                                            onClick={() => handleSelectCuota(cuota.id)} 
+                                            className={`d-flex justify-content-between align-items-center p-3 ${cuotasSeleccionadas.includes(cuota.id) ? 'active-cuota' : ''}`}
+                                            onClick={() => handleSelectCuota(cuota.id)}
                                             action
                                         >
                                             {/* IZQUIERDA: Checkbox y Textos */}
                                             <div className="d-flex align-items-center">
-                                                <Form.Check 
-                                                    type="checkbox" 
-                                                    checked={cuotasSeleccionadas.includes(cuota.id)} 
-                                                    readOnly 
-                                                    className="me-3 custom-checkbox" 
-                                                    style={{ pointerEvents: 'none', transform: 'scale(1.2)' }} 
+                                                <Form.Check
+                                                    type="checkbox"
+                                                    checked={cuotasSeleccionadas.includes(cuota.id)}
+                                                    readOnly
+                                                    className="me-3 custom-checkbox"
+                                                    style={{ pointerEvents: 'none', transform: 'scale(1.2)' }}
                                                 />
                                                 <div>
                                                     <div className="fw-bold fs-6 mb-1">{cuota.periodo}</div>
@@ -164,13 +164,13 @@ function MisPagosPage() {
                         </Col>
 
                         {/* Columna Derecha (Resumen de Pago - MANTENEMOS EL DISEÑO NUEVO) */}
-                        <Col md={4} lg={3}>
+                        <Col md={4} lg={4}>
                             <Card className="shadow-sm mb-3 card-resumen sticky-top" style={{ top: '20px', zIndex: 1 }}>
                                 <Card.Body>
                                     <Card.Title as="h5" className="mb-3 text-center border-bottom pb-2">
                                         <i className="bi bi-receipt me-2"></i>Resumen de Pago
                                     </Card.Title>
-                                    
+
                                     <div className={`content-wrapper mb-3 ${cuotasSeleccionadas.length > 0 ? 'animate-fade-in' : ''}`}>
                                         {cuotasSeleccionadas.length === 0 ? (
                                             <div className="py-3 text-center">
@@ -183,7 +183,7 @@ function MisPagosPage() {
                                         ) : (
                                             <div className="text-center">
                                                 <p className="total-label mb-0">TOTAL A PAGAR</p>
-                                                <h2 className="total-amount my-2">
+                                                <h2 className="total-amount my-2" style={{ whiteSpace: 'nowrap' }}>
                                                     ${totalAPagar.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                                                 </h2>
                                                 <Badge bg="light" text="dark" className="border selection-count">
@@ -210,7 +210,7 @@ function MisPagosPage() {
 
                                         <div className="d-grid">
                                             <Button variant="danger" size="lg" className="btn-generar" disabled={isGenerarDisabled || isGenerating} onClick={handleGenerarCupon}>
-                                                {isGenerating ? <><Spinner size="sm" className="me-2"/>Procesando...</> : <><i className="bi bi-qr-code me-2"></i>Generar Cupón</>}
+                                                {isGenerating ? <><Spinner size="sm" className="me-2" />Procesando...</> : <><i className="bi bi-qr-code me-2"></i>Generar Cupón</>}
                                             </Button>
                                         </div>
                                     </div>
@@ -219,7 +219,7 @@ function MisPagosPage() {
                             {generationError && <Alert variant="danger" className="mt-2">{generationError}</Alert>}
                         </Col>
                     </Row>
-                    
+
                     {/* --- MODAL DE ÉXITO (Diseño NUEVO Moderno/Glow) --- */}
                     <Modal show={!!generatedCoupon} onHide={() => setGeneratedCoupon(null)} centered className="modern-modal modal-success">
                         <Modal.Header closeButton></Modal.Header>
@@ -228,11 +228,11 @@ function MisPagosPage() {
                                 <i className="bi bi-check-lg"></i>
                             </div>
                             <h3 className="mb-3 fw-bold">¡Cupón Generado!</h3>
-                            <p className="text-muted mb-4">Tu cupón de pago se ha generado correctamente.<br/>¿Deseas descargarlo ahora?</p>
+                            <p className="text-muted mb-4">Tu cupón de pago se ha generado correctamente.<br />¿Deseas descargarlo ahora?</p>
                             <div className="d-grid gap-2 col-10 mx-auto">
                                 {generatedCoupon && generatedCoupon.url_pdf && (
                                     <Button variant="success" size="lg" onClick={() => handleDescargar(generatedCoupon)} disabled={downloadingId === generatedCoupon.id} className="shadow-sm">
-                                        {downloadingId === generatedCoupon.id ? <><Spinner as="span" animation="border" size="sm" className="me-2"/>Descargando...</> : <><i className="bi bi-file-earmark-arrow-down-fill me-2"></i>Descargar PDF</>}
+                                        {downloadingId === generatedCoupon.id ? <><Spinner as="span" animation="border" size="sm" className="me-2" />Descargando...</> : <><i className="bi bi-file-earmark-arrow-down-fill me-2"></i>Descargar PDF</>}
                                     </Button>
                                 )}
                                 <Button variant="outline-secondary" onClick={() => setGeneratedCoupon(null)}>Cerrar y ver más tarde</Button>
@@ -242,8 +242,8 @@ function MisPagosPage() {
 
                     {/* --- MODAL DE ADVERTENCIA (Diseño NUEVO Moderno/Glow) --- */}
                     <Modal show={!!cuponExistente} onHide={() => setCuponExistente(null)} centered className="modern-modal modal-warning">
-                         <Modal.Header closeButton></Modal.Header>
-                         <Modal.Body>
+                        <Modal.Header closeButton></Modal.Header>
+                        <Modal.Body>
                             <div className="modal-icon-wrapper warning animate-pulse">
                                 <i className="bi bi-exclamation-lg"></i>
                             </div>
@@ -257,43 +257,43 @@ function MisPagosPage() {
                                 </div>
                             )}
                             <div className="d-grid gap-2 col-10 mx-auto">
-                                 {cuponExistente && (
-                                     <Button variant="primary" size="lg" className="shadow-sm" onClick={() => handleDescargar(cuponExistente)}>
-                                         <i className="bi bi-eye-fill me-2"></i>Ver Cupón Actual
-                                     </Button>
-                                 )}
-                                 <Button variant="link" className="text-muted text-decoration-none" onClick={() => setCuponExistente(null)}>Cancelar</Button>
+                                {cuponExistente && (
+                                    <Button variant="primary" size="lg" className="shadow-sm" onClick={() => handleDescargar(cuponExistente)}>
+                                        <i className="bi bi-eye-fill me-2"></i>Ver Cupón Actual
+                                    </Button>
+                                )}
+                                <Button variant="link" className="text-muted text-decoration-none" onClick={() => setCuponExistente(null)}>Cancelar</Button>
                             </div>
-                         </Modal.Body>
+                        </Modal.Body>
                     </Modal>
                 </Tab>
 
                 {/* PESTAÑAS con Iconos (Recuperado del código viejo) */}
                 <Tab eventKey="mis-cupones" title={<><i className="bi bi-ticket-detailed me-2"></i>Mis Cupones (Activos)</>}>
                     <div className="py-3">
-                         <h4 className="mb-4"><i className="bi bi-list-ol me-2"></i>Cupones Activos</h4>
-                         {errorCupones && <Alert variant="danger">{errorCupones}</Alert>}
-                         {!isLoadingCupones && !errorCupones && cuponesActivos.length === 0 ? 
-                            <Alert variant="light" className="border text-center py-5">No tienes cupones activos.</Alert> : 
+                        <h4 className="mb-4"><i className="bi bi-list-ol me-2"></i>Cupones Activos</h4>
+                        {errorCupones && <Alert variant="danger">{errorCupones}</Alert>}
+                        {!isLoadingCupones && !errorCupones && cuponesActivos.length === 0 ?
+                            <Alert variant="light" className="border text-center py-5">No tienes cupones activos.</Alert> :
                             !isLoadingCupones && !errorCupones && <HistorialCuponesTabla cupones={cuponesActivos} onAnularClick={handleOpenAnularModal} />
-                         }
-                         {isLoadingCupones && <div className="text-center"><Spinner animation="border" /></div>}
+                        }
+                        {isLoadingCupones && <div className="text-center"><Spinner animation="border" /></div>}
                     </div>
                 </Tab>
                 <Tab eventKey="historial" title={<><i className="bi bi-clock-history me-2"></i>Historial</>}>
                     <div className="py-3">
-                         <h4 className="mb-4"><i className="bi bi-list-ol me-2"></i>Historial de Pagos</h4>
-                         {errorCupones && <Alert variant="danger">{errorCupones}</Alert>}
-                         {!isLoadingCupones && !errorCupones && cuponesFinalizados.length === 0 ? 
-                            <Alert variant="light" className="border text-center py-5">No hay historial disponible.</Alert> : 
+                        <h4 className="mb-4"><i className="bi bi-list-ol me-2"></i>Historial de Pagos</h4>
+                        {errorCupones && <Alert variant="danger">{errorCupones}</Alert>}
+                        {!isLoadingCupones && !errorCupones && cuponesFinalizados.length === 0 ?
+                            <Alert variant="light" className="border text-center py-5">No hay historial disponible.</Alert> :
                             !isLoadingCupones && !errorCupones && <HistorialCuponesTabla cupones={cuponesFinalizados} />
-                         }
-                         {isLoadingCupones && <div className="text-center"><Spinner animation="border" /></div>}
+                        }
+                        {isLoadingCupones && <div className="text-center"><Spinner animation="border" /></div>}
                     </div>
                 </Tab>
             </Tabs>
 
-<Modal show={showAnularModal} onHide={handleCloseAnularModal} centered className="modern-modal modal-danger">
+            <Modal show={showAnularModal} onHide={handleCloseAnularModal} centered className="modern-modal modal-danger">
                 <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
                     {/* Ícono de Basura con animación y fondo rojo suave */}
@@ -302,7 +302,7 @@ function MisPagosPage() {
                     </div>
 
                     <h3 className="mb-3 fw-bold">¿Anular Cupón?</h3>
-                    
+
                     {anularError && <Alert variant="danger">{anularError}</Alert>}
 
                     <p className="text-muted mb-4">
@@ -314,20 +314,20 @@ function MisPagosPage() {
                     </p>
 
                     <div className="d-grid gap-2 col-10 mx-auto">
-                        <Button 
-                            variant="danger" 
-                            size="lg" 
-                            onClick={handleConfirmAnular} 
-                            disabled={isAnulando} 
+                        <Button
+                            variant="danger"
+                            size="lg"
+                            onClick={handleConfirmAnular}
+                            disabled={isAnulando}
                             className="shadow-sm"
                         >
                             {isAnulando ? (
-                                <><Spinner as="span" animation="border" size="sm" className="me-2"/>Anulando...</>
+                                <><Spinner as="span" animation="border" size="sm" className="me-2" />Anulando...</>
                             ) : (
                                 <><i className="bi bi-x-circle me-2"></i>Sí, Anular Cupón</>
                             )}
                         </Button>
-                        
+
                         <Button variant="link" onClick={handleCloseAnularModal}>
                             Cancelar, mantener cupón
                         </Button>

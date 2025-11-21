@@ -222,10 +222,10 @@ function ConfiguracionPage() {
                             <Card.Subtitle className="mb-3 text-muted">
                                 Define los estados posibles para los cupones de pago (ej. Activo, Pagado).
                             </Card.Subtitle>
-                            
+
                             {isLoading && (<div className="text-center my-5"><Spinner animation="border" /><p className="mt-2">Cargando...</p></div>)}
                             {error && (<Alert variant="danger">Error al cargar: {error}</Alert>)}
-                            
+
                             {!isLoading && !error && (
                                 <Table striped bordered hover responsive size="sm">
                                     <thead>
@@ -280,11 +280,11 @@ function ConfiguracionPage() {
                             <Card.Subtitle className="mb-3 text-muted">
                                 Define las pasarelas de pago externas (ej. Pago Fácil, Mercado Pago).
                             </Card.Subtitle>
-                            
+
                             {/* Usamos los nuevos estados 'Pasarela' */}
                             {isLoadingPasarelas && (<div className="text-center my-5"><Spinner animation="border" /><p className="mt-2">Cargando...</p></div>)}
                             {errorPasarelas && (<Alert variant="danger">Error al cargar: {errorPasarelas}</Alert>)}
-                            
+
                             {!isLoadingPasarelas && !errorPasarelas && (
                                 <Table striped bordered hover responsive size="sm">
                                     <thead>
@@ -325,9 +325,9 @@ function ConfiguracionPage() {
                 {/* --- FIN NUEVO --- */}
 
             </Tabs>
-            
+
             {/* Modales Pestaña 1 (Estados de Cupón) */}
-            <EstadoCuponModal 
+            <EstadoCuponModal
                 show={showEditModal}
                 handleClose={handleCloseModals}
                 handleSubmit={handleSave}
@@ -336,7 +336,7 @@ function ConfiguracionPage() {
                 initialData={currentItem}
             />
 
-            <ConfirmDeleteModal 
+            <ConfirmDeleteModal
                 show={showDeleteModal}
                 handleClose={handleCloseModals}
                 handleConfirm={handleConfirmDelete}
@@ -349,7 +349,7 @@ function ConfiguracionPage() {
                 }
                 isDeleting={isDeleting}
             />
-            
+
             {/* --- NUEVO: Modales Pestaña 2 (Pasarelas) --- */}
             <PasarelaPagoModal
                 show={showPasarelaModal}
@@ -360,7 +360,7 @@ function ConfiguracionPage() {
                 initialData={currentPasarela}
             />
 
-            <ConfirmDeleteModal 
+            <ConfirmDeleteModal
                 show={showDeletePasarelaModal}
                 handleClose={handleClosePasarelaModals}
                 handleConfirm={handleConfirmDeletePasarela}
@@ -375,7 +375,7 @@ function ConfiguracionPage() {
                 isDeleting={isDeletingPasarela}
             />
             {/* --- FIN NUEVO --- */}
-            
+
         </Container>
     );
 }

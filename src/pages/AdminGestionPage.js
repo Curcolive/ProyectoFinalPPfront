@@ -114,21 +114,60 @@ function AdminGestionPage() {
     // --- Handler Cambio Estado ---
     const handleEstadoChange = async (cuponId, nuevoEstadoId) => {
         const cuponActual = cupones.find(c => c.id === cuponId);
-        if (cuponActual.estado_cupon.id === parseInt(nuevoEstadoId)) return;
+        if (!cuponActual || cuponActual.estado_cupon.id === parseInt(nuevoEstadoId)) return;
 
-        console.log(`Cambiando cupón #${cuponId} al estado ID #${nuevoEstadoId}...`);
+        const estadoAnteriorNombre = cuponActual.estado_cupon.nombre;
+        const nuevoEstadoObj = opcionesEstado.find(opt => opt.id === parseInt(nuevoEstadoId));
+        const nuevoEstadoNombre = nuevoEstadoObj?.nombre;
+
+        console.log(`Cambiando cupón #${cuponId} de ${estadoAnteriorNombre} a ${nuevoEstadoNombre}...`);
 
         try {
             await updateCuponEstado(cuponId, nuevoEstadoId);
+
+            // 1. Actualizar la lista de cupones
             setCupones(prevCupones =>
                 prevCupones.map(cupon =>
                     cupon.id === cuponId
-                        ? { ...cupon, estado_cupon: opcionesEstado.find(opt => opt.id === parseInt(nuevoEstadoId)) }
+                        ? { ...cupon, estado_cupon: nuevoEstadoObj }
                         : cupon
                 )
             );
+
+            // 2. Actualizar las estadísticas en vivo
+            setEstadisticas(prevStats => {
+                if (!prevStats) return prevStats;
+
+                const newStats = { ...prevStats };
+
+                // Helper para mapear nombre de estado a clave de estadística
+                const mapEstadoToKey = (nombre) => {
+                    switch (nombre?.toLowerCase()) {
+                        case 'activo': return 'activos';
+                        case 'pagado': return 'pagados';
+                        case 'vencido':
+                        case 'vencida': return 'vencidos';
+                        case 'anulado': return 'anulados';
+                        default: return null;
+                    }
+                };
+
+                const keyAnterior = mapEstadoToKey(estadoAnteriorNombre);
+                const keyNuevo = mapEstadoToKey(nuevoEstadoNombre);
+
+                if (keyAnterior && newStats[keyAnterior] > 0) {
+                    newStats[keyAnterior]--;
+                }
+                if (keyNuevo) {
+                    newStats[keyNuevo]++;
+                }
+
+                return newStats;
+            });
+
         } catch (err) {
             console.error("Error al cambiar estado:", err);
+            // Si falla, recargamos todo para asegurar consistencia
             fetchAdminCupones();
         }
     };
