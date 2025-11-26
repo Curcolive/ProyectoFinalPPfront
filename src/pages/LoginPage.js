@@ -162,7 +162,9 @@ function LoginPage({ onLoginSuccess }) {
 
                         {error && <span className="text-danger mt-2">{error}</span>}
 
-                        <a href="#!">¿Olvidaste tu contraseña?</a>
+                        <p className="forgot-link" onClick={() => navigate("/forgot-password")}>
+                            ¿Olvidaste tu contraseña?
+                        </p>
 
                         <button type="submit" disabled={loading}>
                             {loading ? (

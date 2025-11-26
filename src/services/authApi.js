@@ -45,3 +45,37 @@ export async function signupUser(username, email, password) {
     }
     return data;
 }
+
+export async function requestPasswordReset(email) {
+    const res = await fetch(`${API_URL}/password-reset/request/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+        const msg = data.detail || data.message || "Error al solicitar recuperación.";
+        throw new Error(msg);
+    }
+    return data;
+}
+
+export async function confirmPasswordReset(uid, token, newPassword) {
+    const res = await fetch(`${API_URL}/password-reset/confirm/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            uid,
+            token,
+            new_password: newPassword,
+        }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+        const msg = data.detail || data.message || "Error al restablecer contraseña.";
+        throw new Error(msg);
+    }
+    return data;
+}
