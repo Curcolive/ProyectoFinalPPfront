@@ -129,7 +129,7 @@ function LoginPage({ onLoginSuccess }) {
                             <input
                                 type="text"
                                 placeholder="Usuario (Legajo o DNI)"
-                                value={signupusername}
+                                value={signupUsername}
                                 onChange={(e) => setSignupUsername(e.target.value)}
                             />
                         </div>
@@ -149,7 +149,7 @@ function LoginPage({ onLoginSuccess }) {
                             <input
                                 type="text"
                                 placeholder="Apellido"
-                                value={signuplastName}
+                                value={signupLastName}
                                 onChange={(e) => setSignupLastName(e.target.value)}
                             />
                         </div>
@@ -159,7 +159,7 @@ function LoginPage({ onLoginSuccess }) {
                             <input
                                 type="email"
                                 placeholder="Email"
-                                value={signupemail}
+                                value={signupEmail}
                                 onChange={(e) => setSignupEmail(e.target.value)}
                             />
                         </div>
@@ -169,7 +169,7 @@ function LoginPage({ onLoginSuccess }) {
                             <input
                                 type="password"
                                 placeholder="Contraseña"
-                                value={signuppassword}
+                                value={signupPassword}
                                 onChange={(e) => setSignupPassword(e.target.value)}
                             />
                         </div>
@@ -177,9 +177,6 @@ function LoginPage({ onLoginSuccess }) {
                         <button type="submit" disabled={loading}>
                             {loading ? "Registrando..." : "Registrarse"}
                         </button>
-
-                        {error && <p className="error-text">{error}</p>}
-                        {message && <p className="success-text">{message}</p>}
                     </form>
                 </div>
 
