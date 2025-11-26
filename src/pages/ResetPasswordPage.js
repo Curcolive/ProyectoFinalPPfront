@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { confirmPasswordReset } from "../api/auth";
+import { confirmPasswordReset } from '../services/authApi';
 
 function ResetPasswordPage() {
     const [searchParams] = useSearchParams();

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { requestPasswordReset } from "../api/auth";
+import { requestPasswordReset } from '../services/authApi';
 
 function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
