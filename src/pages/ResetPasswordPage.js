@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { confirmPasswordReset } from '../services/authApi';
+import './ForgotPasswordPage.css';
 
 function ResetPasswordPage() {
     const [searchParams] = useSearchParams();
@@ -45,26 +46,47 @@ function ResetPasswordPage() {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h1>Restablecer contraseña</h1>
-            <input
-                type="password"
-                placeholder="Nueva contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-            <input
-                type="password"
-                placeholder="Repetir contraseña"
-                value={password2}
-                onChange={(e) => setPassword2(e.target.value)}
-            />
-            <button type="submit" disabled={loading}>
-                {loading ? "Actualizando..." : "Cambiar contraseña"}
-            </button>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            {message && <p style={{ color: "green" }}>{message}</p>}
-        </form>
+        <div className="recover-container">
+            <div className="recover-card">
+                <h1 className="recover-title">Restablecer contraseña</h1>
+                <p className="recover-text">
+                    Ingresá tu nueva contraseña y confirmala para actualizar tu acceso.
+                </p>
+
+                <form onSubmit={handleSubmit} className="recover-form">
+                    <div className="input-group">
+                        <i className="fa-solid fa-lock"></i>
+                        <input
+                            type="password"
+                            placeholder="Nueva contraseña"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <i className="fa-solid fa-lock"></i>
+                        <input
+                            type="password"
+                            placeholder="Repetir contraseña"
+                            value={password2}
+                            onChange={(e) => setPassword2(e.target.value)}
+                        />
+                    </div>
+
+                    <button className="btn-submit" type="submit" disabled={loading}>
+                        {loading ? "Actualizando..." : "Cambiar contraseña"}
+                    </button>
+
+                    {error && <p className="error-text">{error}</p>}
+                    {message && <p className="success-text">{message}</p>}
+                </form>
+
+                <p className="back-login" onClick={() => navigate("/login")}>
+                    ← Volver al inicio de sesión
+                </p>
+            </div>
+        </div>
     );
 }
 
