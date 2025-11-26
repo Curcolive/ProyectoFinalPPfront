@@ -24,7 +24,7 @@ function App() {
           if (tokenData.access) {
             const decodedToken = jwtDecode(tokenData.access);
             const isStaff = decodedToken.is_staff || false;
-            
+
             setIsAdmin(isStaff); // <-- Solo guardamos esto
             setIsAuthenticated(true);
           } else {
@@ -45,24 +45,24 @@ function App() {
       setIsLoadingAuth(false);
     };
     checkAuth();
-  }, []); 
+  }, []);
 
   const handleLoginSuccess = () => {
     // Solo necesitamos recargar para que el nuevo token sea leído por el layout
     // (O podemos re-decodificar aquí como antes, ambas funcionan)
     const tokenDataString = localStorage.getItem('authToken');
     if (tokenDataString) {
-        try {
-            const tokenData = JSON.parse(tokenDataString);
-            if (tokenData.access) {
-                const decodedToken = jwtDecode(tokenData.access);
-                const isStaff = decodedToken.is_staff || false;
-                // Redirige
-                window.location.href = isStaff ? '/admin/cobranzas' : '/cuotas';
-            }
-        } catch(e) {
-            handleLogout();
+      try {
+        const tokenData = JSON.parse(tokenDataString);
+        if (tokenData.access) {
+          const decodedToken = jwtDecode(tokenData.access);
+          const isStaff = decodedToken.is_staff || false;
+          // Redirige
+          window.location.href = isStaff ? '/admin/cobranzas' : '/cuotas';
         }
+      } catch (e) {
+        handleLogout();
+      }
     }
   };
 
@@ -99,6 +99,8 @@ function App() {
           }
         />
 
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         {/* --- RUTAS PROTEGIDAS (CON LAYOUT) --- */}
         <Route
           path="/*"
@@ -146,9 +148,9 @@ function App() {
                       <Navigate to={isAdmin ? "/admin/cobranzas" : "/cuotas"} replace />
                     }
                   />
-                  
+
                   {/* Tus otras rutas placeholder */}
-                  
+
                   <Route path="*" element={<div className="text-center p-5"><h2>404 - Página no encontrada</h2></div>} />
                 </Routes>
               </MainLayout>
