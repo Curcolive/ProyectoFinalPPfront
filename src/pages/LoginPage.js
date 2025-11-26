@@ -212,20 +212,41 @@ function LoginPage({ onLoginSuccess }) {
                         <p className="forgot-link" onClick={() => navigate("/forgot-password")}>
                             ¿Olvidaste tu contraseña?
                         </p>
-                        <button type="submit" disabled={loading}>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="btn btn-primary w-100 mb-3"
+                        >
                             {loading ? (
                                 <>
-                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                                    <Spinner
+                                        as="span"
+                                        animation="border"
+                                        size="sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                        className="me-2"
+                                    />
                                     Ingresando...
                                 </>
                             ) : (
-                                'Iniciar Sesión'
+                                "Iniciar sesión"
                             )}
                         </button>
-                        <div className="social-login">
+
+                        {/* separador */}
+                        <div className="login-divider">
+                            <span>o continúa con</span>
+                        </div>
+
+                        <div className="social-login mt-2 d-flex justify-content-center">
                             <GoogleLogin
                                 onSuccess={handleGoogleSuccess}
                                 onError={handleGoogleError}
+                                shape="rectangular"
+                                theme="outline"
+                                text="continue_with"
+                                width="260"
                             />
                         </div>
                     </form>
