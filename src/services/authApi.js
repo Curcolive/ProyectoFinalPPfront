@@ -23,26 +23,40 @@ export const loginUser = async (username, password) => {
     }
 };
 
-export async function signupUser(username, email, password) {
+export async function completeProfile(data) {
+    const res = await fetch(`${API_BASE_URL}/complete-profile/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+    });
+
+    const json = await res.json();
+    if (!res.ok) {
+        throw new Error(json.detail || "Error al completar perfil");
+    }
+    return json;
+}
+
+export async function signupUser(username, first_name, last_name, email, password) {
     const res = await fetch(`${API_BASE_URL}/signup/`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, email, password }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            username,
+            first_name,
+            last_name,
+            email,
+            password
+        }),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-        const msg =
-            data.detail ||
-            data.message ||
-            (typeof data === "string"
-                ? data
-                : "Error en el registro. Verifica los datos.");
+        const msg = data.detail || "Error en el registro.";
         throw new Error(msg);
     }
+
     return data;
 }
 
@@ -77,5 +91,22 @@ export async function confirmPasswordReset(uid, token, newPassword) {
         const msg = data.detail || data.message || "Error al restablecer contraseña.";
         throw new Error(msg);
     }
+    return data;
+}
+
+export async function loginWithGoogle(credential) {
+    const res = await fetch(`${API_BASE_URL}/google-login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        const msg = data.detail || data.message || "Error al iniciar sesión con Google.";
+        throw new Error(msg);
+    }
+
     return data;
 }

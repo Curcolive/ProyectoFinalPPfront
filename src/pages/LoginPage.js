@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
-import { loginUser, signupUser } from '../services/authApi';
+import { GoogleLogin } from "@react-oauth/google";
+import { loginUser, signupUser, loginWithGoogle } from '../services/authApi';
 import logoISDM from '../assets/logo-pequeño.png';
 import fondoInstituto from '../assets/fondo-instituto.png';
 import './LoginPage.css';
@@ -16,7 +17,9 @@ function LoginPage({ onLoginSuccess }) {
     const [isActive, setIsActive] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-    const [signupName, setSignupName] = useState('');
+    const [signupUsername, setSignupUsername] = useState('');
+    const [signupFirstName, setSignupFirstName] = useState('');
+    const [signupLastName, setSignupLastName] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
 
@@ -45,28 +48,59 @@ function LoginPage({ onLoginSuccess }) {
         }
     };
 
+    const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+        const token = credentialResponse.credential;
+        const data = await loginWithGoogle(token);
+
+        localStorage.setItem("authToken", JSON.stringify(data));
+
+        if (data.require_password) {
+            navigate("/completar-perfil", { state: { user: data.user } });
+            return;
+        }
+
+        onLoginSuccess();
+    } catch (err) {
+        setError(err.message || "Error al iniciar sesión con Google.");
+    }
+};
+
+    const handleGoogleError = () => {
+        setError("No se pudo completar el inicio con Google.");
+    };
+
     const handleSignup = async (e) => {
         e.preventDefault();
         setError('');
 
-        if (!signupName || !signupEmail || !signupPassword) {
-            setError("Por favor, completa nombre, email y contraseña.");
+        if (!signupUsername || !signupFirstName || !signupLastName || !signupEmail || !signupPassword) {
+            setError("Completa todos los campos para registrarte.");
             return;
         }
 
         setLoading(true);
 
         try {
-            const newUser = await signupUser(signupName, signupEmail, signupPassword);
+            const newUser = await signupUser(
+                signupUsername,
+                signupFirstName,
+                signupLastName,
+                signupEmail,
+                signupPassword
+            );
             console.log("Usuario creado:", newUser);
 
-            const tokenData = await loginUser(signupName, signupPassword);
+            const tokenData = await loginUser(signupUsername, signupPassword);
             localStorage.setItem("authToken", JSON.stringify(tokenData));
-            onLoginSuccess();
 
-            setSignupName('');
+            onLoginSuccess();
+            setSignupUsername('');
+            setSignupFirstName('');
+            setSignupLastName('');
             setSignupEmail('');
             setSignupPassword('');
+
         } catch (err) {
             console.error("Error en handleSignup:", err);
             setError(err.message || "Error al registrarse.");
@@ -88,19 +122,35 @@ function LoginPage({ onLoginSuccess }) {
                         <h1>Crear Cuenta</h1>
                         <div className="social-icons">
                             <a href="#!" onClick={(e) => e.preventDefault()} className="icon"><i className="fa-brands fa-google-plus-g"></i></a>
-                            <a href="#!" onClick={(e) => e.preventDefault()} className="icon"><i className="fa-brands fa-facebook-f"></i></a>
-                            <a href="#!" onClick={(e) => e.preventDefault()} className="icon"><i className="fa-brands fa-github"></i></a>
-                            <a href="#!" onClick={(e) => e.preventDefault()} className="icon"><i className="fa-brands fa-linkedin-in"></i></a>
                         </div>
                         <span>o usa tu email para registrarte</span>
+                        <div className="input-group">
+                            <i className="fa-solid fa-id-card"></i>
+                            <input
+                                type="text"
+                                placeholder="Usuario (Legajo o DNI)"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                            />
+                        </div>
+
                         <div className="input-group">
                             <i className="fa-solid fa-user"></i>
                             <input
                                 type="text"
                                 placeholder="Nombre"
-                                name="username"
-                                value={signupName}
-                                onChange={(e) => setSignupName(e.target.value)}
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="input-group">
+                            <i className="fa-solid fa-user"></i>
+                            <input
+                                type="text"
+                                placeholder="Apellido"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
                             />
                         </div>
 
@@ -109,9 +159,8 @@ function LoginPage({ onLoginSuccess }) {
                             <input
                                 type="email"
                                 placeholder="Email"
-                                name="email"
-                                value={signupEmail}
-                                onChange={(e) => setSignupEmail(e.target.value)}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
 
@@ -120,19 +169,27 @@ function LoginPage({ onLoginSuccess }) {
                             <input
                                 type="password"
                                 placeholder="Contraseña"
-                                name="password"
-                                value={signupPassword}
-                                onChange={(e) => setSignupPassword(e.target.value)}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
 
                         <button type="submit" disabled={loading}>
                             {loading ? "Registrando..." : "Registrarse"}
                         </button>
+
+                        {error && <p className="error-text">{error}</p>}
+                        {message && <p className="success-text">{message}</p>}
                     </form>
                 </div>
 
                 <div className="form-container sign-in">
+                    <div className="social-login">
+                        <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={handleGoogleError}
+                        />
+                    </div>
                     <form onSubmit={handleLogin}>
 
                         <img src={logoISDM} alt="Logo ISDM" width="80" className="mb-3" />
