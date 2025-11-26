@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { requestPasswordReset } from '../services/authApi';
+import { useNavigate } from "react-router-dom";
 import './ForgotPasswordPage.css';
 
 function ForgotPasswordPage() {
@@ -7,6 +8,7 @@ function ForgotPasswordPage() {
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
