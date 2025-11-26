@@ -24,7 +24,7 @@ export const loginUser = async (username, password) => {
 };
 
 export async function signupUser(username, email, password) {
-    const res = await fetch(`${API_URL}/signup/`, {
+    const res = await fetch(`${API_BASE_URL}/signup/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export async function signupUser(username, email, password) {
 }
 
 export async function requestPasswordReset(email) {
-    const res = await fetch(`${API_URL}/password-reset/request/`, {
+    const res = await fetch(`${API_BASE_URL}/password-reset/request/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -62,7 +62,7 @@ export async function requestPasswordReset(email) {
 }
 
 export async function confirmPasswordReset(uid, token, newPassword) {
-    const res = await fetch(`${API_URL}/password-reset/confirm/`, {
+    const res = await fetch(`${API_BASE_URL}/password-reset/confirm/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import './LoginPage.css';
 import { Spinner } from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
 import { loginUser, signupUser } from '../services/authApi';
 import logoISDM from '../assets/logo-pequeño.png';
 import fondoInstituto from '../assets/fondo-instituto.png';
+import './LoginPage.css';
 
 
 function LoginPage({ onLoginSuccess }) {
@@ -18,6 +19,8 @@ function LoginPage({ onLoginSuccess }) {
     const [signupName, setSignupName] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
+
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
