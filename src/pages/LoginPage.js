@@ -129,8 +129,8 @@ function LoginPage({ onLoginSuccess }) {
                             <input
                                 type="text"
                                 placeholder="Usuario (Legajo o DNI)"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                value={signupusername}
+                                onChange={(e) => setSignupUsername(e.target.value)}
                             />
                         </div>
 
@@ -139,8 +139,8 @@ function LoginPage({ onLoginSuccess }) {
                             <input
                                 type="text"
                                 placeholder="Nombre"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
+                                value={signupFirstName}
+                                onChange={(e) => setSignupFirstName(e.target.value)}
                             />
                         </div>
 
@@ -149,8 +149,8 @@ function LoginPage({ onLoginSuccess }) {
                             <input
                                 type="text"
                                 placeholder="Apellido"
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
+                                value={signuplastName}
+                                onChange={(e) => setSignupLastName(e.target.value)}
                             />
                         </div>
 
@@ -159,8 +159,8 @@ function LoginPage({ onLoginSuccess }) {
                             <input
                                 type="email"
                                 placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={signupemail}
+                                onChange={(e) => setSignupEmail(e.target.value)}
                             />
                         </div>
 
@@ -169,8 +169,8 @@ function LoginPage({ onLoginSuccess }) {
                             <input
                                 type="password"
                                 placeholder="Contraseña"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={signuppassword}
+                                onChange={(e) => setSignupPassword(e.target.value)}
                             />
                         </div>
 
