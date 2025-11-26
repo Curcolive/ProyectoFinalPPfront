@@ -84,7 +84,7 @@ function LoginPage({ onLoginSuccess }) {
         >
             <div className={`login-container ${isActive ? 'active' : ''}`} id="container">
                 <div className="form-container sign-up">
-                    <form>
+                    <form onSubmit={handleSignup}>
                         <h1>Crear Cuenta</h1>
                         <div className="social-icons">
                             <a href="#!" onClick={(e) => e.preventDefault()} className="icon"><i className="fa-brands fa-google-plus-g"></i></a>
