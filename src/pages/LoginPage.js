@@ -212,12 +212,6 @@ function LoginPage({ onLoginSuccess }) {
                         <p className="forgot-link" onClick={() => navigate("/forgot-password")}>
                             ¿Olvidaste tu contraseña?
                         </p>
-                        <div className="social-login">
-                            <GoogleLogin
-                                onSuccess={handleGoogleSuccess}
-                                onError={handleGoogleError}
-                            />
-                        </div>
                         <button type="submit" disabled={loading}>
                             {loading ? (
                                 <>
@@ -228,6 +222,12 @@ function LoginPage({ onLoginSuccess }) {
                                 'Iniciar Sesión'
                             )}
                         </button>
+                        <div className="social-login">
+                            <GoogleLogin
+                                onSuccess={handleGoogleSuccess}
+                                onError={handleGoogleError}
+                            />
+                        </div>
                     </form>
                 </div>
 
