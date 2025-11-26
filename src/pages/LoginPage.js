@@ -49,22 +49,22 @@ function LoginPage({ onLoginSuccess }) {
     };
 
     const handleGoogleSuccess = async (credentialResponse) => {
-    try {
-        const token = credentialResponse.credential;
-        const data = await loginWithGoogle(token);
+        try {
+            const token = credentialResponse.credential;
+            const data = await loginWithGoogle(token);
 
-        localStorage.setItem("authToken", JSON.stringify(data));
+            localStorage.setItem("authToken", JSON.stringify(data));
 
-        if (data.require_password) {
-            navigate("/completar-perfil", { state: { user: data.user } });
-            return;
+            if (data.require_password) {
+                navigate("/completar-perfil", { state: { user: data.user } });
+                return;
+            }
+
+            onLoginSuccess();
+        } catch (err) {
+            setError(err.message || "Error al iniciar sesión con Google.");
         }
-
-        onLoginSuccess();
-    } catch (err) {
-        setError(err.message || "Error al iniciar sesión con Google.");
-    }
-};
+    };
 
     const handleGoogleError = () => {
         setError("No se pudo completar el inicio con Google.");
@@ -120,15 +120,11 @@ function LoginPage({ onLoginSuccess }) {
                 <div className="form-container sign-up">
                     <form onSubmit={handleSignup}>
                         <h1>Crear Cuenta</h1>
-                        <div className="social-icons">
-                            <a href="#!" onClick={(e) => e.preventDefault()} className="icon"><i className="fa-brands fa-google-plus-g"></i></a>
-                        </div>
-                        <span>o usa tu email para registrarte</span>
                         <div className="input-group">
                             <i className="fa-solid fa-id-card"></i>
                             <input
                                 type="text"
-                                placeholder="Usuario (Legajo o DNI)"
+                                placeholder="Usuario"
                                 value={signupUsername}
                                 onChange={(e) => setSignupUsername(e.target.value)}
                             />
@@ -181,12 +177,6 @@ function LoginPage({ onLoginSuccess }) {
                 </div>
 
                 <div className="form-container sign-in">
-                    <div className="social-login">
-                        <GoogleLogin
-                            onSuccess={handleGoogleSuccess}
-                            onError={handleGoogleError}
-                        />
-                    </div>
                     <form onSubmit={handleLogin}>
 
                         <img src={logoISDM} alt="Logo ISDM" width="80" className="mb-3" />
@@ -195,7 +185,7 @@ function LoginPage({ onLoginSuccess }) {
                             <i className="fa-solid fa-user"></i>
                             <input
                                 type="text"
-                                placeholder="Usuario (Legajo o DNI)"
+                                placeholder="Usuario"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 required
@@ -222,7 +212,12 @@ function LoginPage({ onLoginSuccess }) {
                         <p className="forgot-link" onClick={() => navigate("/forgot-password")}>
                             ¿Olvidaste tu contraseña?
                         </p>
-
+                        <div className="social-login">
+                            <GoogleLogin
+                                onSuccess={handleGoogleSuccess}
+                                onError={handleGoogleError}
+                            />
+                        </div>
                         <button type="submit" disabled={loading}>
                             {loading ? (
                                 <>
