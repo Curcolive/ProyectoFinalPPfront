@@ -1,30 +1,55 @@
-import './ForgotPasswordPage.css';
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { completeProfile } from '../services/authApi';
+import "./ForgotPasswordPage.css";
+
 
 function CompleteProfile() {
     const location = useLocation();
-    const { user } = location.state;
-
-    const [username, setUsername] = useState('');
-    const [firstName, setFirstName] = useState(user.first_name || '');
-    const [lastName, setLastName] = useState(user.last_name || '');
-    const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const { user } = location.state || {};
 
+    const [username, setUsername] = useState("");
+    const [firstName, setFirstName] = useState(user?.first_name || "");
+    const [lastName, setLastName] = useState(user?.last_name || "");
+    const [password, setPassword] = useState("");
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
+        setMessage("");
 
-        const res = await completeProfile({
-            user_id: user.id,
-            username,
-            first_name: firstName,
-            last_name: lastName,
-            password
-        });
+        if (!username || !firstName || !lastName || !password) {
+            setError("Completa todos los campos.");
+            return;
+        }
 
-        alert("Perfil completado. Ya podés usar tu contraseña.");
-        navigate("/login");
+        if (!user) {
+            setError("No se encontró el usuario. Volvé a iniciar sesión con Google.");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await completeProfile({
+                user_id: user.id,
+                username,
+                first_name: firstName,
+                last_name: lastName,
+                password,
+            });
+
+            setMessage("Perfil completado correctamente. Ahora podés iniciar sesión.");
+            setTimeout(() => navigate("/login"), 1500);
+        } catch (err) {
+            setError(err.message || "Error al completar perfil.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
