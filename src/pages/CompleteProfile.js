@@ -19,42 +19,43 @@ function CompleteProfile() {
     const [message, setMessage] = useState("");
 
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setMessage("");
+        e.preventDefault();
+        setError("");
+        setMessage("");
 
-    if (!username || !firstName || !lastName || !password) {
-        setError("Completa todos los campos.");
-        return;
-    }
+        if (!username || !firstName || !lastName || !password) {
+            setError("Completa todos los campos.");
+            return;
+        }
 
-    if (!user) {
-        setError("No se encontró el usuario. Volvé a iniciar sesión con Google.");
-        return;
-    }
+        if (!user) {
+            setError("No se encontró el usuario. Volvé a iniciar sesión con Google.");
+            return;
+        }
 
-    setLoading(true);
+        setLoading(true);
 
-    try {
-        await completeProfile({
-            user_id: user.id,
-            username,
-            first_name: firstName,
-            last_name: lastName,
-            password,
-        });
+        try {
+            await completeProfile({
+                user_id: user.id,
+                username,
+                first_name: firstName,
+                last_name: lastName,
+                password,
+            });
+            const tokenData = await loginUser(username, password);
+            localStorage.setItem("authToken", JSON.stringify(tokenData));
+            if (onLoginSuccess) {
+                onLoginSuccess();
+            }
+            navigate("/");
 
-        const tokenData = await loginUser(username, password);
-        localStorage.setItem("authToken", JSON.stringify(tokenData));
-        setMessage("Perfil completado. Iniciando sesión...");
-        setTimeout(() => navigate("/"), 1800);
-
-    } catch (err) {
-        setError(err.message || "Error al completar perfil.");
-    } finally {
-        setLoading(false);
-    }
-};
+        } catch (err) {
+            setError(err.message || "Error al completar perfil.");
+        } finally {
+            setLoading(false);
+        }
+    };
     return (
         <div className="recover-container">
             <div className="recover-card">

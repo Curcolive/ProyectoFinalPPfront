@@ -14,7 +14,6 @@ import { jwtDecode } from 'jwt-decode';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // --- ¡SIMPLIFICADO! Solo 'isAdmin' para las redirecciones ---
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
@@ -28,7 +27,7 @@ function App() {
             const decodedToken = jwtDecode(tokenData.access);
             const isStaff = decodedToken.is_staff || false;
 
-            setIsAdmin(isStaff); // <-- Solo guardamos esto
+            setIsAdmin(isStaff); 
             setIsAuthenticated(true);
           } else {
             localStorage.removeItem('authToken');
@@ -51,8 +50,6 @@ function App() {
   }, []);
 
   const handleLoginSuccess = () => {
-    // Solo necesitamos recargar para que el nuevo token sea leído por el layout
-    // (O podemos re-decodificar aquí como antes, ambas funcionan)
     const tokenDataString = localStorage.getItem('authToken');
     if (tokenDataString) {
       try {
@@ -60,7 +57,6 @@ function App() {
         if (tokenData.access) {
           const decodedToken = jwtDecode(tokenData.access);
           const isStaff = decodedToken.is_staff || false;
-          // Redirige
           window.location.href = isStaff ? '/admin/cobranzas' : '/cuotas';
         }
       } catch (e) {
