@@ -43,6 +43,7 @@ function CompleteProfile({ onLoginSuccess }) {
                 last_name: lastName,
                 password,
             });
+
             const tokenData = await loginUser(username, password);
             localStorage.setItem("authToken", JSON.stringify(tokenData));
             if (onLoginSuccess) {

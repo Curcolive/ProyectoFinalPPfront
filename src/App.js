@@ -100,7 +100,7 @@ function App() {
 
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-         <Route path="/completar-perfil" element={<CompleteProfile />} />
+         <Route path="/completar-perfil"  element={<CompleteProfile onLoginSuccess={handleLoginSuccess} />}/>
         {/* --- RUTAS PROTEGIDAS (CON LAYOUT) --- */}
         <Route
           path="/*"
