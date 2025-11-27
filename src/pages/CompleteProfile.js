@@ -4,7 +4,7 @@ import { loginUser, completeProfile } from '../services/authApi';
 import "./ForgotPasswordPage.css";
 
 
-function CompleteProfile() {
+function CompleteProfile({ onLoginSuccess }) {
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = location.state || {};
