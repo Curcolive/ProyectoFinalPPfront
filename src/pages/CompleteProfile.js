@@ -47,7 +47,7 @@ function CompleteProfile() {
         const tokenData = await loginUser(username, password);
         localStorage.setItem("authToken", JSON.stringify(tokenData));
         setMessage("Perfil completado. Iniciando sesión...");
-        setTimeout(() => navigate("/"), 800);
+        setTimeout(() => navigate("/"), 1800);
 
     } catch (err) {
         setError(err.message || "Error al completar perfil.");
