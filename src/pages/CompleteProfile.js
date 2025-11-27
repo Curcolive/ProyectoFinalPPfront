@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { completeProfile } from '../services/authApi';
+import { loginUser, completeProfile } from '../services/authApi';
 import "./ForgotPasswordPage.css";
 
 
@@ -19,39 +19,42 @@ function CompleteProfile() {
     const [message, setMessage] = useState("");
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError("");
-        setMessage("");
+    e.preventDefault();
+    setError("");
+    setMessage("");
 
-        if (!username || !firstName || !lastName || !password) {
-            setError("Completa todos los campos.");
-            return;
-        }
+    if (!username || !firstName || !lastName || !password) {
+        setError("Completa todos los campos.");
+        return;
+    }
 
-        if (!user) {
-            setError("No se encontró el usuario. Volvé a iniciar sesión con Google.");
-            return;
-        }
+    if (!user) {
+        setError("No se encontró el usuario. Volvé a iniciar sesión con Google.");
+        return;
+    }
 
-        setLoading(true);
-        try {
-            await completeProfile({
-                user_id: user.id,
-                username,
-                first_name: firstName,
-                last_name: lastName,
-                password,
-            });
+    setLoading(true);
 
-            setMessage("Perfil completado correctamente. Ahora podés iniciar sesión.");
-            setTimeout(() => navigate("/login"), 1500);
-        } catch (err) {
-            setError(err.message || "Error al completar perfil.");
-        } finally {
-            setLoading(false);
-        }
-    };
+    try {
+        await completeProfile({
+            user_id: user.id,
+            username,
+            first_name: firstName,
+            last_name: lastName,
+            password,
+        });
 
+        const tokenData = await loginUser(username, password);
+        localStorage.setItem("authToken", JSON.stringify(tokenData));
+        setMessage("Perfil completado. Iniciando sesión...");
+        setTimeout(() => navigate("/"), 800);
+
+    } catch (err) {
+        setError(err.message || "Error al completar perfil.");
+    } finally {
+        setLoading(false);
+    }
+};
     return (
         <div className="recover-container">
             <div className="recover-card">
@@ -66,7 +69,7 @@ function CompleteProfile() {
                         <i className="fa-solid fa-id-card"></i>
                         <input
                             type="text"
-                            placeholder="Usuario (DNI / Legajo)"
+                            placeholder="Usuario"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
