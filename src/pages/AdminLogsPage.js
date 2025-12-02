@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Container, Row, Col, Card, Spinner, Alert, Form, Button, InputGroup } from "react-bootstrap";
+import { getHistorialLogs } from "../services/logsApi";
 
 function AdminLogsPage() {
 
@@ -22,20 +23,9 @@ function AdminLogsPage() {
         try {
             setIsLoading(true);
             setError(null);
-
-            const token = localStorage.getItem("access");
-
-            const res = await fetch(`/admin/logs/`, {
-                headers: {
-                    "Authorization": "Bearer " + token,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            const data = await res.json();
-
-            setLogs(data.results);
-            calcularStats(data.results);
+        const data = await getHistorialLogs();
+        setLogs(data.results);
+        calcularStats(data.results);            
 
         } catch (err) {
             setError(err.message || "Error cargando logs");
