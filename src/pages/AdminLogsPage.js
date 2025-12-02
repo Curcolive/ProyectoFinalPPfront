@@ -23,9 +23,9 @@ function AdminLogsPage() {
         try {
             setIsLoading(true);
             setError(null);
-        const data = await getHistorialLogs();
-        setLogs(data.results);
-        calcularStats(data.results);            
+            const data = await getHistorialLogs();
+            setLogs(data.results);
+            calcularStats(data.results);            
 
         } catch (err) {
             setError(err.message || "Error cargando logs");
