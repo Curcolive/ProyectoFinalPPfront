@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Container, Row, Col, Card, Spinner, Alert, Form, Button, InputGroup } from "react-bootstrap";
-import { getHistorialLogs } from "../services/logsApi";
+import { getHistorialLogs } from "../services/cuponesApi";
 
 function AdminLogsPage() {
 
