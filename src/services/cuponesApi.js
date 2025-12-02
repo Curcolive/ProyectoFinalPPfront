@@ -17,6 +17,32 @@ const getAuthToken = () => {
     return null;
 };
 
+export const getHistorialLogs = async () => {
+    const token = getAuthToken();
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/logs/`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(token && { Authorization: `Bearer ${token}` })
+            },
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(
+                `Error ${response.status}: ${errorData.detail || errorData.error || response.statusText}`
+            );
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching logs:", error);
+        throw error;
+    }
+};
 
 // Función para obtener la lista de cuotas pendientes
 export const getCuotasPendientes = async () => {
