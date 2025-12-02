@@ -9,6 +9,7 @@ import ConfiguracionPage from './pages/ConfiguracionPage';
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import CompleteProfile from './pages/CompleteProfile';
+import AdminLogsPage from './pages/AdminLogsPage';
 import './App.css';
 import { jwtDecode } from 'jwt-decode';
 
@@ -130,6 +131,16 @@ function App() {
                       ) : (
                         <Navigate to="/cuotas" replace />
                       )
+                    }
+                  />
+                  <Route
+                    path="/admin/logs"
+                    element={
+                      isAdmin ? (
+                          <AdminLogsPage />
+                        ) : (
+                          <Navigate to="/cuotas" replace />
+                        )
                     }
                   />
                   <Route
