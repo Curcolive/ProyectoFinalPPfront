@@ -21,7 +21,7 @@ export const getHistorialLogs = async () => {
     const token = getAuthToken();
 
     try {
-        const response = await fetch(`${API_BASE_URL}/admin/logs/`, {
+        const response = await fetch(`${API_BASE_URL}/cupones/admin/logs/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
