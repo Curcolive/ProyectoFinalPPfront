@@ -40,6 +40,7 @@ function Header({ isAuthenticated, handleLogout }) {
             { label: 'Dashboard', href: '/admin/dashboard' },
             { label: 'Alumnos', href: '/admin/alumnos' },
             { label: 'Cobranzas', href: '/admin/cobranzas' },
+            { label: 'Logs', href: '/admin/logs' },
             { label: 'Configuración', href: '/admin/config' }
         ];
     } else if (isAuthenticated) {
