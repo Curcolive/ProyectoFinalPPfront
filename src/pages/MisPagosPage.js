@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Container, Row, Col, Tabs, Tab, ListGroup, Form, Button, Card, Badge, Spinner, Alert, Modal } from 'react-bootstrap';
 import './MisPagosPage.css';
 import HistorialCuponesTabla from '../components/HistorialCuponesTabla';
-import { getCuotasPendientes, generarCupon, getHistorialCupones, anularCuponAlumno, getPasarelasDisponibles, descargarCuponPDF, handleBlobDownload } from '../services/cuponesApi';
+import { getCuotasPendientes, generarCupon, getHistorialCupones, anularCuponAlumno, getPasarelasDisponibles, descargarCuponPDF, handleBlobDownload,registrarPagoParcial } from '../services/cuponesApi';
 import { v4 as uuidv4 } from 'uuid';
 
 function MisPagosPage() {
@@ -26,6 +26,12 @@ function MisPagosPage() {
     const [pasarelas, setPasarelas] = useState([]);
     const [isLoadingPasarelas, setIsLoadingPasarelas] = useState(true);
     const [downloadingId, setDownloadingId] = useState(null);
+    const [showPagoModal, setShowPagoModal] = useState(false);
+    const [cuotaParaPago, setCuotaParaPago] = useState(null);
+    const [montoPago, setMontoPago] = useState('');
+    const [isPagando, setIsPagando] = useState(false);
+    const [pagoError, setPagoError] = useState(null);
+    const [pagoExitoso, setPagoExitoso] = useState(false);
 
     // --- Effects ---
     const fetchCuotas = async () => {
@@ -81,6 +87,47 @@ function MisPagosPage() {
             } else { window.open('/cupon_ejemplo.pdf', '_blank'); }
         } catch (error) { console.error(error); alert(`Error: ${error.message}`); }
         finally { setDownloadingId(null); }
+    };
+
+        const handleOpenPagoModal = (cuota) => {
+        setCuotaParaPago(cuota);
+        const saldo = cuota.saldo_pendiente ?? cuota.monto;
+        setMontoPago(saldo.toString());
+        setPagoError(null);
+        setPagoExitoso(false);
+        setShowPagoModal(true);
+    };
+    const handleClosePagoModal = () => {
+        setShowPagoModal(false);
+        setCuotaParaPago(null);
+        setMontoPago('');
+        setPagoError(null);
+        setIsPagando(false);
+        setPagoExitoso(false);
+    };
+    const handleConfirmPago = async () => {
+        if (!cuotaParaPago || !montoPago || !pasarelaSeleccionada) return;
+        setIsPagando(true);
+        setPagoError(null);
+        const key = uuidv4();
+        try {
+            const montoNum = parseFloat(montoPago);
+            const result = await generarCupon([cuotaParaPago.id], key, pasarelaSeleccionada, montoNum);
+            setGeneratedCoupon(result);
+            setPagoExitoso(true);
+            fetchCuotas();
+            fetchTodosLosCupones();
+            setTimeout(() => handleClosePagoModal(), 1500);
+        } catch (err) {
+            if (err && err.status === 409 && err.cupon_existente) {
+                setCuponExistente(err.cupon_existente);
+                handleClosePagoModal();
+            } else {
+                setPagoError(err.message || "Error al generar cupón.");
+            }
+        } finally {
+            setIsPagando(false);
+        }
     };
 
     // --- Cálculos ---
@@ -334,8 +381,82 @@ function MisPagosPage() {
                     </div>
                 </Modal.Body>
             </Modal>
+
+            <Modal show={showPagoModal} onHide={handleClosePagoModal} centered className="modern-modal modal-success">
+                <Modal.Header closeButton></Modal.Header>
+                <Modal.Body>
+                    {pagoExitoso ? (
+                        <>
+                            <div className="modal-icon-wrapper success animate-fade-in">
+                                <i className="bi bi-check-lg"></i>
+                            </div>
+                            <h3 className="mb-3 fw-bold">¡Cupón Generado!</h3>
+                            <p className="text-muted">El cupón de pago se ha generado correctamente.</p>
+                        </>
+                    ) : (
+                        <>
+                            <div className="modal-icon-wrapper success">
+                                <i className="bi bi-qr-code"></i>
+                            </div>
+                            <h3 className="mb-3 fw-bold">Generar Cupón de Pago</h3>
+                            {cuotaParaPago && (
+                                <p className="text-muted mb-3">
+                                    <strong>{cuotaParaPago.periodo}</strong><br />
+                                    Monto total: <strong>${parseFloat(cuotaParaPago.saldo_pendiente ?? cuotaParaPago.monto).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</strong>
+                                </p>
+                            )}
+                            {pagoError && <Alert variant="danger">{pagoError}</Alert>}
+                            <Form.Group className="mb-3">
+                                <Form.Label>Monto del cupón</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    step="0.01"
+                                    min="0.01"
+                                    max={cuotaParaPago?.saldo_pendiente ?? cuotaParaPago?.monto}
+                                    value={montoPago}
+                                    onChange={(e) => setMontoPago(e.target.value)}
+                                    placeholder="Ingrese el monto (parcial o total)"
+                                />
+                                <Form.Text className="text-muted">
+                                    Puedes generar un cupón por un monto parcial o el total.
+                                </Form.Text>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label><i className="bi bi-credit-card me-1"></i>Medio de pago</Form.Label>
+                                <Form.Select
+                                    value={pasarelaSeleccionada}
+                                    onChange={(e) => setPasarelaSeleccionada(e.target.value)}
+                                    disabled={isLoadingPasarelas}
+                                >
+                                    {isLoadingPasarelas ? <option>Cargando...</option> : (
+                                        <>
+                                            <option value="">Seleccionar...</option>
+                                            {pasarelas.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
+                                        </>
+                                    )}
+                                </Form.Select>
+                            </Form.Group>
+                            <div className="d-grid gap-2 col-10 mx-auto">
+                                <Button
+                                    variant="success"
+                                    size="lg"
+                                    onClick={handleConfirmPago}
+                                    disabled={isPagando || !montoPago || parseFloat(montoPago) <= 0 || !pasarelaSeleccionada}
+                                    className="shadow-sm"
+                                >
+                                    {isPagando ? (
+                                        <><Spinner as="span" animation="border" size="sm" className="me-2" />Generando...</>
+                                    ) : (
+                                        <><i className="bi bi-qr-code me-2"></i>Generar Cupón</>
+                                    )}
+                                </Button>
+                                <Button variant="link" onClick={handleClosePagoModal}>Cancelar</Button>
+                            </div>
+                        </>
+                    )}
+                </Modal.Body>
+            </Modal>
         </Container>
     );
 }
-
 export default MisPagosPage;

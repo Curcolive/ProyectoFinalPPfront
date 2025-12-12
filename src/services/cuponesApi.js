@@ -75,21 +75,28 @@ export const getCuotasPendientes = async () => {
 };
 
 // --- FUNCIÓN NUEVA PARA GENERAR EL CUPÓN ---
-export const generarCupon = async (cuotasIds, idempotencyKey, pasarelaId) => {
+export const generarCupon = async (cuotasIds, idempotencyKey, pasarelaId, montoParcial = null) => {
     const token = getAuthToken();
 
     try {
+        const bodyData = {
+            cuotas_ids: cuotasIds,
+            idempotency_key: idempotencyKey,
+            pasarela_id: pasarelaId
+        };
+
+        // Si hay monto parcial, agregarlo al body
+        if (montoParcial !== null && montoParcial > 0) {
+            bodyData.monto_parcial = montoParcial;
+        }
+
         const response = await fetch(`${API_BASE_URL}/cupones/generar-cupon/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 ...(token && { 'Authorization': `Bearer ${token}` })
             },
-            body: JSON.stringify({
-                cuotas_ids: cuotasIds,
-                idempotency_key: idempotencyKey,
-                pasarela_id: pasarelaId
-            }),
+            body: JSON.stringify(bodyData),
         });
 
         const data = await response.json();
@@ -163,6 +170,35 @@ export const getPasarelasDisponibles = async () => {
         return await response.json();
     } catch (error) {
         console.error("Error fetching pasarelas disponibles:", error);
+        throw error;
+    }
+};
+//PAGO PARCIAL
+export const registrarPagoParcial = async (cuotaId, monto) => {
+    const token = getAuthToken();
+    if (!token) {
+        return Promise.reject(new Error("Se requiere autenticación."));
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/cupones/cuota/${cuotaId}/pagar/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ monto: monto })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${data.error || 'Error al registrar pago.'}`);
+        }
+
+        return data;
+    } catch (error) {
+        console.error(`Error registrando pago parcial para cuota ${cuotaId}:`, error);
         throw error;
     }
 };
@@ -475,13 +511,14 @@ export const descargarCuponPDF = async (cuponId) => {
         console.error(`Error descargando PDF del cupón ${cuponId}:`, error);
         throw error;
     }
-};
+  };
 
-/**
+  /**
  * Helper que toma un "blob" (archivo) y un nombre, 
  * y simula un clic para descargarlo en el navegador del usuario.
  */
 export const handleBlobDownload = (blob, filename) => {
+
     // 1. Crea una URL temporal en el navegador para el archivo
     const url = window.URL.createObjectURL(blob);
 
@@ -498,4 +535,4 @@ export const handleBlobDownload = (blob, filename) => {
     // 4. Limpia el enlace y la URL temporal
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
-};
+}
