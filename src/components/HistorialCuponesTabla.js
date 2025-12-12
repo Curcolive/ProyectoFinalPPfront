@@ -98,6 +98,11 @@ const HistorialCuponesTabla = ({ cupones, isAdminView = false, onAnularClick, op
 
                                 <td className="ps-4 fw-bold text-dark fs-6">
                                     ${parseFloat(cupon.monto_total || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    {cupon.es_pago_parcial && (
+                                        <Badge bg="warning" text="dark" className="ms-2 rounded-pill" style={{ fontSize: '0.7em' }}>
+                                            <i className="bi bi-pie-chart-fill me-1"></i>Parcial
+                                        </Badge>
+                                    )}
                                 </td>
 
                                 <td className="ps-5">

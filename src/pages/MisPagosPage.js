@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Container, Row, Col, Tabs, Tab, ListGroup, Form, Button, Card, Badge, Spinner, Alert, Modal } from 'react-bootstrap';
 import './MisPagosPage.css';
 import HistorialCuponesTabla from '../components/HistorialCuponesTabla';
-import { getCuotasPendientes, generarCupon, getHistorialCupones, anularCuponAlumno, getPasarelasDisponibles, descargarCuponPDF, handleBlobDownload,registrarPagoParcial } from '../services/cuponesApi';
+import { getCuotasPendientes, generarCupon, getHistorialCupones, anularCuponAlumno, getPasarelasDisponibles, descargarCuponPDF, handleBlobDownload, registrarPagoParcial } from '../services/cuponesApi';
 import { v4 as uuidv4 } from 'uuid';
 
 function MisPagosPage() {
@@ -26,6 +26,7 @@ function MisPagosPage() {
     const [pasarelas, setPasarelas] = useState([]);
     const [isLoadingPasarelas, setIsLoadingPasarelas] = useState(true);
     const [downloadingId, setDownloadingId] = useState(null);
+    // --- Estados para Pago Parcial ---
     const [showPagoModal, setShowPagoModal] = useState(false);
     const [cuotaParaPago, setCuotaParaPago] = useState(null);
     const [montoPago, setMontoPago] = useState('');
@@ -89,7 +90,8 @@ function MisPagosPage() {
         finally { setDownloadingId(null); }
     };
 
-        const handleOpenPagoModal = (cuota) => {
+    // --- Handlers para Pago Parcial ---
+    const handleOpenPagoModal = (cuota) => {
         setCuotaParaPago(cuota);
         const saldo = cuota.saldo_pendiente ?? cuota.monto;
         setMontoPago(saldo.toString());
@@ -112,6 +114,7 @@ function MisPagosPage() {
         const key = uuidv4();
         try {
             const montoNum = parseFloat(montoPago);
+            // Siempre enviar el monto especificado - el backend determina si es parcial
             const result = await generarCupon([cuotaParaPago.id], key, pasarelaSeleccionada, montoNum);
             setGeneratedCoupon(result);
             setPagoExitoso(true);
@@ -168,44 +171,68 @@ function MisPagosPage() {
 
                             {!isLoading && !error && cuotas.length > 0 && (
                                 <ListGroup>
-                                    {cuotas.map((cuota) => (
-                                        <ListGroup.Item
-                                            key={cuota.id}
-                                            as="li"
-                                            // Combinamos estilos: d-flex para alinear, pero CSS maneja la tarjeta
-                                            className={`d-flex justify-content-between align-items-center p-3 ${cuotasSeleccionadas.includes(cuota.id) ? 'active-cuota' : ''}`}
-                                            onClick={() => handleSelectCuota(cuota.id)}
-                                            action
-                                        >
-                                            {/* IZQUIERDA: Checkbox y Textos */}
-                                            <div className="d-flex align-items-center">
-                                                <Form.Check
-                                                    type="checkbox"
-                                                    checked={cuotasSeleccionadas.includes(cuota.id)}
-                                                    readOnly
-                                                    className="me-3 custom-checkbox"
-                                                    style={{ pointerEvents: 'none', transform: 'scale(1.2)' }}
-                                                />
-                                                <div>
-                                                    <div className="fw-bold fs-6 mb-1">{cuota.periodo}</div>
-                                                    <small className="text-muted d-flex align-items-center">
-                                                        <i className="bi bi-calendar-event me-2"></i>
-                                                        Vence: {new Date(cuota.fecha_vencimiento + 'T00:00:00').toLocaleDateString('es-AR')}
-                                                    </small>
+                                    {cuotas.map((cuota, index) => {
+                                        const isEnabled = index === 0 || cuotasSeleccionadas.includes(cuotas[index - 1].id);
+                                        return (
+                                            <ListGroup.Item
+                                                key={cuota.id}
+                                                as="li"
+                                                // Combinamos estilos: d-flex para alinear, pero CSS maneja la tarjeta
+                                                className={`d-flex justify-content-between align-items-center p-3 ${cuotasSeleccionadas.includes(cuota.id) ? 'active-cuota' : ''}`}
+                                                onClick={() => isEnabled && handleSelectCuota(cuota.id)}
+                                                action
+                                                disabled={!isEnabled}
+                                                title={!isEnabled ? "Debes abonar la cuota anterior primero" : ""}
+                                                style={!isEnabled ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
+                                            >
+                                                {/* IZQUIERDA: Checkbox y Textos */}
+                                                <div className="d-flex align-items-center">
+                                                    <Form.Check
+                                                        type="checkbox"
+                                                        checked={cuotasSeleccionadas.includes(cuota.id)}
+                                                        readOnly
+                                                        disabled={!isEnabled}
+                                                        className="me-3 custom-checkbox"
+                                                        style={{ pointerEvents: 'none', transform: 'scale(1.2)' }}
+                                                    />
+                                                    <div>
+                                                        <div className="fw-bold fs-6 mb-1">{cuota.periodo}</div>
+                                                        <small className="text-muted d-flex align-items-center">
+                                                            <i className="bi bi-calendar-event me-2"></i>
+                                                            Vence: {new Date(cuota.fecha_vencimiento + 'T00:00:00').toLocaleDateString('es-AR')}
+                                                        </small>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            {/* DERECHA: Precio y Badge (Alineados como pediste en el paso anterior) */}
-                                            <div className="d-flex align-items-center gap-3">
-                                                <span className="fw-bold fs-5 text-dark">
-                                                    ${parseFloat(cuota.monto).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-                                                </span>
-                                                <div style={{ minWidth: '90px', textAlign: 'right' }}>
-                                                    {getEstadoBadge(cuota.estado_cuota.nombre)}
+                                                {/* DERECHA: Precio, Saldo, Badge y Botón Pagar */}
+                                                <div className="d-flex align-items-center gap-2">
+                                                    <div className="text-end me-2">
+                                                        <span className="fw-bold fs-5 text-dark d-block">
+                                                            ${parseFloat(cuota.monto).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                                                        </span>
+                                                        {cuota.saldo_pendiente !== null && cuota.saldo_pendiente !== undefined && parseFloat(cuota.saldo_pendiente) < parseFloat(cuota.monto) && (
+                                                            <small className="text-success">
+                                                                <i className="bi bi-check-circle me-1"></i>
+                                                                Saldo: ${parseFloat(cuota.saldo_pendiente).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                                                            </small>
+                                                        )}
+                                                    </div>
+                                                    <div style={{ minWidth: '90px', textAlign: 'right' }}>
+                                                        {getEstadoBadge(cuota.estado_cuota.nombre)}
+                                                    </div>
+                                                    <Button
+                                                        variant="success"
+                                                        size="sm"
+                                                        className="ms-2"
+                                                        onClick={(e) => { e.stopPropagation(); handleOpenPagoModal(cuota); }}
+                                                        title="Registrar pago parcial"
+                                                    >
+                                                        <i className="bi bi-cash-coin me-1"></i>Pagar
+                                                    </Button>
                                                 </div>
-                                            </div>
-                                        </ListGroup.Item>
-                                    ))}
+                                            </ListGroup.Item>
+                                        );
+                                    })}
                                 </ListGroup>
                             )}
                         </Col>
@@ -382,6 +409,7 @@ function MisPagosPage() {
                 </Modal.Body>
             </Modal>
 
+            {/* --- MODAL DE PAGO PARCIAL --- */}
             <Modal show={showPagoModal} onHide={handleClosePagoModal} centered className="modern-modal modal-success">
                 <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
@@ -459,4 +487,5 @@ function MisPagosPage() {
         </Container>
     );
 }
+
 export default MisPagosPage;

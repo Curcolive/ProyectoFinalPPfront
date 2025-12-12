@@ -173,7 +173,8 @@ export const getPasarelasDisponibles = async () => {
         throw error;
     }
 };
-//PAGO PARCIAL
+
+// --- FUNCIÓN PARA REGISTRAR PAGO PARCIAL ---
 export const registrarPagoParcial = async (cuotaId, monto) => {
     const token = getAuthToken();
     if (!token) {
@@ -511,14 +512,13 @@ export const descargarCuponPDF = async (cuponId) => {
         console.error(`Error descargando PDF del cupón ${cuponId}:`, error);
         throw error;
     }
-  };
+};
 
-  /**
+/**
  * Helper que toma un "blob" (archivo) y un nombre, 
  * y simula un clic para descargarlo en el navegador del usuario.
  */
 export const handleBlobDownload = (blob, filename) => {
-
     // 1. Crea una URL temporal en el navegador para el archivo
     const url = window.URL.createObjectURL(blob);
 
@@ -535,4 +535,4 @@ export const handleBlobDownload = (blob, filename) => {
     // 4. Limpia el enlace y la URL temporal
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
-}
+};
